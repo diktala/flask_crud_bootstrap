@@ -14,9 +14,13 @@ app.config['WTF_CSRF_ENABLED'] = False
 bootstrap = Bootstrap5(app)
 # csrf = CSRFProtect(app)
 
+class DB_User():
+    loginName = 'some-user'
+    password = 'some-password'
+    remember = True
 
-class HelloForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(1, 20)])
+class FormSearchLogin(FlaskForm):
+    loginName = StringField(label='Login name', validators=[DataRequired(), Length(1, 20)], description="", render_kw={"placeholder": "Customer username"} )
     password = PasswordField('Password', validators=[DataRequired(), Length(1, 150)])
     remember = BooleanField('Remember me')
     submit = SubmitField()
@@ -29,8 +33,14 @@ def index():
 
 @app.route('/form', methods=['GET', 'POST'])
 def test_form():
-    # form = HelloForm(request.args)
-    form = HelloForm()
+    # if request.args.get('LoginName'):
+    #    request.args['loginName'] = request.args.get('LoginName')
+
+    exampleUser = DB_User()
+    exampleUser.loginName = 'some customized-user'
+
+    #form = FormSearchLogin(obj=exampleUser)
+    form = FormSearchLogin(request.args,obj=exampleUser)
     if form.validate_on_submit():
         flash('Form validated!')
         return redirect(url_for('index'))
