@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime as dt
 from flask import Flask, render_template, request, flash, Markup, redirect, url_for
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms.validators import DataRequired, Length, Regexp
@@ -19,11 +20,33 @@ db = SQLAlchemy(app)
 # csrf = CSRFProtect(app)
 
 
-class DB_User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    loginName = db.Column(db.String(30), nullable=False)
-    firstName = db.Column(db.String(30), nullable=False)
-    lastName = db.Column(db.String(30), nullable=False)
+class DB_UserId(db.Model):
+    "UsersId"
+    loginName = db.Column("LoginName", db.String(30), primary_key=True)
+    firstName = db.Column("FirstName", db.String(30), nullable=False)
+    lastName = db.Column("LastName", db.String(30), nullable=False)
+    organizationName = db.Column("OrganizationName", db.String(30), nullable=True)
+    address = db.Column("Address", db.String(30), nullable=True)
+    city = db.Column("City", db.String(30), nullable=True)
+    state = db.Column("State", db.String(30), nullable=True)
+    postalCode = db.Column("PostalCode", db.String(30), nullable=True)
+    country = db.Column("Country", db.String(30), nullable=True)
+    homePhone = db.Column("HomePhone", db.String(30), nullable=True)
+    accountNumber = db.Column("AccountNumber", db.String(30), nullable=True)
+    language = db.Column("Language", db.String(30), nullable=True)
+    paymentMethod = db.Column("PaymentMethod", db.String(30), nullable=True)
+    creditCardNumber = db.Column("CreditCardNumber", db.String(30), nullable=True)
+    creditCardExpiry = db.Column("CreditCardExpiry", db.String(30), nullable=True)
+    bankName = db.Column("BankName", db.String(30), nullable=True)
+    checkNumber = db.Column("CheckNumber", db.String(30), nullable=True)
+    bankAccount = db.Column("BankAccount", db.String(30), nullable=True)
+    identificationCard = db.Column("IdentificationCard", db.String(30), nullable=True)
+    authorizationCode = db.Column("AuthorizationCode", db.String(30), nullable=True)
+    operatingSystem = db.Column("OperatingSystem", db.String(30), nullable=True)
+    operator = db.Column("Operator", db.String(30), nullable=True)
+    referredBy = db.Column("ReferredBy", db.String(30), nullable=True)
+    notes = db.Column("Notes", db.String(254), nullable=True)
+    dateJoined = db.Column("DateJoined", db.String(30), nullable=True)
 
 
 class FormSearchLogin(FlaskForm):
@@ -33,32 +56,36 @@ class FormSearchLogin(FlaskForm):
                             , description=''
                             , render_kw={"placeholder": "Customer username"}
                 )
+    submit = SubmitField()
+
+
+class FormUserDetail(FlaskForm):
     firstName = StringField(  label='First name'
                             , validators=[DataRequired()
-                            , Length(1, 20)]
+                            , Length(1, 30)]
                             , description=''
                             , render_kw={"placeholder": "Customer first name"}
                 )
     lastName = StringField(  label='Last name'
                             , validators=[DataRequired()
-                            , Length(1, 20)]
+                            , Length(1, 30)]
                             , description=''
                             , render_kw={"placeholder": "Customer last name"}
                 )
     submit = SubmitField()
 
 
-
 @app.before_first_request
 def before_first_request_func():
     db.drop_all()
     db.create_all()
+    today = str(dt.now())
     names = {"alpha","bravo","charly"}
     for name in names:
-        row = DB_User(
+        row = DB_UserId(
             loginName=f'{name}',
-            firstName=f'{name} First',
-            lastName=f'{name} Last',
+            firstName=f'{name} First {today[0:10]}',
+            lastName=f'{name} Last {today[10:19]}',
             )
         db.session.add(row)
     db.session.commit()
@@ -71,25 +98,32 @@ def index():
 
 @app.route('/form', methods=['GET', 'POST'])
 def test_form():
-    exampleUser = DB_User.query.filter_by(id=3).first()
-    form = FormSearchLogin(obj=exampleUser)
+    formSearchLogin = FormSearchLogin()
+    formUserDetail = FormUserDetail()
+
     if ( request.method == 'GET'
          and request.args.get('LoginName') is not None
         ):
-        form.loginName.data = request.args.get('LoginName')
+        formSearchLogin.loginName.data = request.args.get('LoginName')
 
-    if form.validate_on_submit():
+    if formSearchLogin.validate_on_submit():
+        exampleUser = DB_UserId.query.filter_by(loginName=formSearchLogin.data["loginName"]).first()
+        formUserDetail = FormUserDetail(obj=exampleUser)
+
+    # TODO: disabled for now
+    if False and formUserDetail.validate_on_submit():
         try:
-            form.populate_obj(exampleUser)
+            formSearchLogin.populate_obj(exampleUser)
+            formUserDetail.populate_obj(exampleUser)
             db.session.add(exampleUser)
             db.session.commit()
-            flash('LoginName="' + form.data['loginName'] + '"', 'success')
+            flash('LoginName="' + formSearchLogin.data['loginName'] + '"', 'success')
             return redirect(url_for('test_form'))
         except:
             db.session.rollback()
             flash('Error: could not save.', 'danger')
 
-    return render_template('form.html', form=form)
+    return render_template('form.html', formSearchLogin=formSearchLogin, formUserDetail=formUserDetail)
 
 
 if __name__ == '__main__':

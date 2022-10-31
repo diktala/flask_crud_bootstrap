@@ -3,12 +3,17 @@
 
 {% block content %}
 
-    <h2>Search Login</h2>
+    <h3>Search Login</h3>
     <form method="post">
-    {# {{ form.csrf_token }} #}
-    {{ render_form_row([form.loginName, form.submit], form_type="horizontal", col_map={'loginName': 'col-sm-11', 'submit': 'col-sm-1'}) }}
-    {{ render_form_row([form.firstName], form_type="horizontal", col_map={'firstName': 'col-sm-12'}) }}
-    {{ render_form_row([form.lastName], form_type="horizontal", col_map={'lastName': 'col-sm-12'}) }}
+    {# {{ formSearchLogin.csrf_token }} #}
+    {{ render_form_row([formSearchLogin.loginName, formSearchLogin.submit], form_type="horizontal", col_map={'loginName': 'col-sm-11', 'submit': 'col-sm-1'}) }}
+    </form>
+
+    <h3>User info</h3>
+    <form method="post">
+    {{ render_form_row([formUserDetail.firstName], form_type="horizontal", col_map={'firstName': 'col-sm-12'}) }}
+    {{ render_form_row([formUserDetail.lastName], form_type="horizontal", col_map={'lastName': 'col-sm-12'}) }}
+    {{ render_field(formUserDetail.submit) }}
     </form>
 
     {#
