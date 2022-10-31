@@ -60,6 +60,12 @@ class FormSearchLogin(FlaskForm):
 
 
 class FormUserDetail(FlaskForm):
+    loginName = StringField(  label='Login name'
+                            , validators=[DataRequired()
+                            , Length(1, 20)]
+                            , description=''
+                            , render_kw={"placeholder": "Customer username"}
+                )
     firstName = StringField(  label='First name'
                             , validators=[DataRequired()
                             , Length(1, 30)]
@@ -98,7 +104,7 @@ def index():
 
 @app.route('/form', methods=['GET', 'POST'])
 def test_form():
-    formSearchLogin = FormSearchLogin()
+    formSearchLogin = FormSearchLogin(request.args)
     formUserDetail = FormUserDetail()
 
     if ( request.method == 'GET'
@@ -106,19 +112,19 @@ def test_form():
         ):
         formSearchLogin.loginName.data = request.args.get('LoginName')
 
-    if formSearchLogin.validate_on_submit():
+    if 'loginName' in request.args and formSearchLogin.validate():
         exampleUser = DB_UserId.query.filter_by(loginName=formSearchLogin.data["loginName"]).first()
+        assert False
         formUserDetail = FormUserDetail(obj=exampleUser)
 
-    # TODO: disabled for now
-    if False and formUserDetail.validate_on_submit():
+    if formUserDetail.validate_on_submit():
         try:
-            formSearchLogin.populate_obj(exampleUser)
             formUserDetail.populate_obj(exampleUser)
             db.session.add(exampleUser)
             db.session.commit()
-            flash('LoginName="' + formSearchLogin.data['loginName'] + '"', 'success')
-            return redirect(url_for('test_form'))
+            flash('LoginName="' + formUserDetail.data['loginName'] + '"', 'success')
+            # return redirect(url_for('test_form'))
+            return render_template('form.html', formSearchLogin=formSearchLogin, formUserDetail=formUserDetail)
         except:
             db.session.rollback()
             flash('Error: could not save.', 'danger')
