@@ -2,7 +2,7 @@
 from datetime import datetime as dt
 from flask import Flask, render_template, request, flash, Markup, redirect, url_for
 from flask_wtf import FlaskForm, CSRFProtect
-from wtforms.validators import DataRequired, Length, Regexp
+from wtforms.validators import InputRequired, Length, Regexp
 from wtforms.fields import *
 from flask_bootstrap import Bootstrap5, SwitchField
 from flask_sqlalchemy import SQLAlchemy
@@ -52,7 +52,7 @@ class DB_UserId(db.Model):
 class FormSearchLogin(FlaskForm):
     loginName = StringField(
         label="Login name",
-        validators=[DataRequired(), Length(1, 20)],
+        validators=[InputRequired(), Length(1, 20)],
         description="",
         render_kw={"placeholder": "Customer username"},
     )
@@ -62,19 +62,19 @@ class FormSearchLogin(FlaskForm):
 class FormUserDetail(FlaskForm):
     loginName = StringField(
         label="Login name",
-        validators=[DataRequired(), Length(1, 20)],
+        validators=[InputRequired(), Length(1, 20)],
         description="",
         render_kw={"placeholder": "Customer username"},
     )
     firstName = StringField(
         label="First name",
-        validators=[DataRequired(), Length(1, 30)],
+        validators=[InputRequired(), Length(1, 30)],
         description="",
         render_kw={"placeholder": "Customer first name"},
     )
     lastName = StringField(
         label="Last name",
-        validators=[DataRequired(), Length(1, 30)],
+        validators=[InputRequired(), Length(1, 30)],
         description="",
         render_kw={"placeholder": "Customer last name"},
     )
