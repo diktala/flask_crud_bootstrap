@@ -8,12 +8,12 @@ from flask_bootstrap import Bootstrap5, SwitchField
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.secret_key = 'dev'
-# set bootstrap to be served locally 
-app.config['BOOTSTRAP_SERVE_LOCAL'] = True
-app.config['WTF_CSRF_ENABLED'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = "dev"
+# set bootstrap to be served locally
+app.config["BOOTSTRAP_SERVE_LOCAL"] = True
+app.config["WTF_CSRF_ENABLED"] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 bootstrap = Bootstrap5(app)
 db = SQLAlchemy(app)
@@ -50,34 +50,34 @@ class DB_UserId(db.Model):
 
 
 class FormSearchLogin(FlaskForm):
-    loginName = StringField(  label='Login name'
-                            , validators=[DataRequired()
-                            , Length(1, 20)]
-                            , description=''
-                            , render_kw={"placeholder": "Customer username"}
-                )
+    loginName = StringField(
+        label="Login name",
+        validators=[DataRequired(), Length(1, 20)],
+        description="",
+        render_kw={"placeholder": "Customer username"},
+    )
     submit = SubmitField()
 
 
 class FormUserDetail(FlaskForm):
-    loginName = StringField(  label='Login name'
-                            , validators=[DataRequired()
-                            , Length(1, 20)]
-                            , description=''
-                            , render_kw={"placeholder": "Customer username"}
-                )
-    firstName = StringField(  label='First name'
-                            , validators=[DataRequired()
-                            , Length(1, 30)]
-                            , description=''
-                            , render_kw={"placeholder": "Customer first name"}
-                )
-    lastName = StringField(  label='Last name'
-                            , validators=[DataRequired()
-                            , Length(1, 30)]
-                            , description=''
-                            , render_kw={"placeholder": "Customer last name"}
-                )
+    loginName = StringField(
+        label="Login name",
+        validators=[DataRequired(), Length(1, 20)],
+        description="",
+        render_kw={"placeholder": "Customer username"},
+    )
+    firstName = StringField(
+        label="First name",
+        validators=[DataRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "Customer first name"},
+    )
+    lastName = StringField(
+        label="Last name",
+        validators=[DataRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "Customer last name"},
+    )
     submit = SubmitField()
 
 
@@ -86,53 +86,61 @@ def before_first_request_func():
     db.drop_all()
     db.create_all()
     today = str(dt.now())
-    names = {"alpha","bravo","charly"}
+    names = {"alpha", "bravo", "charly"}
     for name in names:
         row = DB_UserId(
-            loginName=f'{name}',
-            firstName=f'{name} First {today[0:10]}',
-            lastName=f'{name} Last {today[10:19]}',
-            )
+            loginName=f"{name}",
+            firstName=f"{name} First {today[0:10]}",
+            lastName=f"{name} Last {today[10:19]}",
+        )
         db.session.add(row)
     db.session.commit()
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-@app.route('/form', methods=['GET', 'POST'])
+@app.route("/form", methods=["GET", "POST"])
 def test_form():
     formSearchLogin = FormSearchLogin(request.args)
     formUserDetail = FormUserDetail()
 
-    if ( request.method == 'GET'
-         and request.args.get('LoginName') is not None
-        ):
-        formSearchLogin.loginName.data = request.args.get('LoginName')
+    if request.method == "GET" and request.args.get("LoginName") is not None:
+        formSearchLogin.loginName.data = request.args.get("LoginName")
 
-    if 'loginName' in request.args and formSearchLogin.validate():
+    if "loginName" in request.args and formSearchLogin.validate():
         # exampleUser = DB_UserId.query.filter_by(loginName=formSearchLogin.data["loginName"]).first()
         # exampleUser = db.session.execute('select * from UsersId').scalars()
-        exampleUser = db.session.execute(db.select(DB_UserId).where(DB_UserId.loginName == formSearchLogin.data["loginName"])).scalar()
+        exampleUser = db.session.execute(
+            db.select(DB_UserId).where(
+                DB_UserId.loginName == formSearchLogin.data["loginName"]
+            )
+        ).scalar()
         formUserDetail = FormUserDetail(obj=exampleUser)
-        #assert False
+        # assert False
 
     if formUserDetail.validate_on_submit():
         try:
             formUserDetail.populate_obj(exampleUser)
             db.session.add(exampleUser)
             db.session.commit()
-            flash('LoginName="' + formUserDetail.data['loginName'] + '"', 'success')
+            flash('LoginName="' + formUserDetail.data["loginName"] + '"', "success")
             # return redirect(url_for('test_form'))
-            return render_template('form.html', formSearchLogin=formSearchLogin, formUserDetail=formUserDetail)
+            return render_template(
+                "form.html",
+                formSearchLogin=formSearchLogin,
+                formUserDetail=formUserDetail,
+            )
         except:
             db.session.rollback()
-            flash('Error: could not save.', 'danger')
+            flash("Error: could not save.", "danger")
 
-    return render_template('form.html', formSearchLogin=formSearchLogin, formUserDetail=formUserDetail)
+    return render_template(
+        "form.html", formSearchLogin=formSearchLogin, formUserDetail=formUserDetail
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
