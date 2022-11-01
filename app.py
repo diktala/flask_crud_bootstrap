@@ -21,7 +21,7 @@ db = SQLAlchemy(app)
 
 
 class DB_UserId(db.Model):
-    "UsersId"
+    __tablename__ = "UsersId"
     loginName = db.Column("LoginName", db.String(30), primary_key=True)
     firstName = db.Column("FirstName", db.String(30), nullable=False)
     lastName = db.Column("LastName", db.String(30), nullable=False)
@@ -113,9 +113,11 @@ def test_form():
         formSearchLogin.loginName.data = request.args.get('LoginName')
 
     if 'loginName' in request.args and formSearchLogin.validate():
-        exampleUser = DB_UserId.query.filter_by(loginName=formSearchLogin.data["loginName"]).first()
-        assert False
+        # exampleUser = DB_UserId.query.filter_by(loginName=formSearchLogin.data["loginName"]).first()
+        # exampleUser = db.session.execute('select * from UsersId').scalars()
+        exampleUser = db.session.execute(db.select(DB_UserId).where(DB_UserId.loginName == formSearchLogin.data["loginName"])).scalar()
         formUserDetail = FormUserDetail(obj=exampleUser)
+        #assert False
 
     if formUserDetail.validate_on_submit():
         try:
