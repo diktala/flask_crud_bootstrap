@@ -1,22 +1,18 @@
 {% extends 'base.html' %}
 {% from 'bootstrap5/form.html' import render_form, render_field, render_form_row %}
-
 {% block content %}
-
     <h3>Search Login</h3>
     <form method="GET">
-    {# {{ formSearchLogin.csrf_token }} #}
-    {{ render_form_row([formSearchLogin.loginName, formSearchLogin.submit], form_type="horizontal", col_map={'loginName': 'col-sm-11', 'submit': 'col-sm-1'}) }}
+        {# {{ formSearchLogin.csrf_token }} #}
+        {{ render_form_row([formSearchLogin.loginName, formSearchLogin.submit], form_type="horizontal", col_map={'loginName': 'col-sm-11', 'submit': 'col-sm-1'}) }}
     </form>
-
     <h3>User info</h3>
     <form method="post">
-    {{ render_field(formUserDetail.loginName) }}
-    {{ render_form_row([formUserDetail.firstName], form_type="horizontal", col_map={'firstName': 'col-sm-12'}) }}
-    {{ render_form_row([formUserDetail.lastName], form_type="horizontal", col_map={'lastName': 'col-sm-12'}) }}
-    {{ render_field(formUserDetail.submit) }}
+        {{ render_field(formUserDetail.loginName) }}
+        {{ render_form_row([formUserDetail.firstName], form_type="horizontal", col_map={'firstName': 'col-sm-12'}) }}
+        {{ render_form_row([formUserDetail.lastName], form_type="horizontal", col_map={'lastName': 'col-sm-12'}) }}
+        {{ render_field(formUserDetail.submit) }}
     </form>
-
     {#
     <h2>Render a form with render_form</h2>
     {{ render_form(form) }}
@@ -40,7 +36,5 @@
     {{ render_form_row([form.remember]) }}
     {{ render_form_row([form.submit]) }}
     </form>
-    #}
-
-
+#}
 {% endblock %}

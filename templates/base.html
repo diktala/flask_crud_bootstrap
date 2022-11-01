@@ -2,40 +2,43 @@
 {% from 'bootstrap5/utils.html' import render_messages %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>User Update</title>
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    {{ bootstrap.load_css() }}
-    <style>
-        pre {
-            background: #ddd;
-            padding: 10px;
-        }
-        h2 {
-            margin-top: 20px;
-        }
-        footer {
-            margin: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="text-white font-weight-bold bg-danger">Internet</div>
-    {% include 'topmenu.html' %}
-    <main class="container">
-        {{ render_messages(container=False, dismissible=True, dismiss_animate=True) }}
-        {% block content %}{% endblock %}
-    </main>
-
-    <footer class="text-center">
-        {% block footer %}
-            <small> &copy; 2018–<script>document.write(new Date().getFullYear())</script> 
-            </small>
-        {% endblock %}
-    </footer>
-
-    {{ bootstrap.load_js() }}
-</body>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>User Update</title>
+        <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        {{ bootstrap.load_css() }}
+        <style>
+            pre {
+                background: #ddd;
+                padding: 10px;
+            }
+            
+            h2 {
+                margin-top: 20px;
+            }
+            
+            footer {
+                margin: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="text-white font-weight-bold bg-danger">Internet</div>
+        {% include 'topmenu.html' %}
+        <main class="container">
+            {{ render_messages(container=False, dismissible=True, dismiss_animate=True) }}
+            {% block content %}{% endblock %}
+        </main>
+        <footer class="text-center">
+            {% block footer %}
+                <small> &copy; 2018–<script>
+    document.write(new Date().getFullYear())
+</script>
+                </small>
+            {% endblock %}
+        </footer>
+        {{ bootstrap.load_js() }}
+    </body>
 </html>
