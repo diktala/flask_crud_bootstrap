@@ -3,6 +3,7 @@ flask with crud form and bootstrap css
 
 ---
 
+#### setup venv
 ```
 cd ~/Desktop
 mkdir ~/Desktop/flaskor; cd ~/Desktop/flaskor
@@ -10,45 +11,85 @@ python3 -m venv venv
 source venv/bin/activate
 git clone git@github.com:diktala/flask-crud-bootstrap.git
 cd flask-crud-bootstrap
-
 pip list
 pip install --upgrade pip
+
+pip install pymssql
+pip install bootstrap-flask
+pip install flask-sqlalchemy
+pip install flask-wtf
+pip install black djlint
+
+python ./app.py
 ```
 
 ---
 
-- reset pip:
+#### another session of venv
+```
+cd ~/Desktop/
+python3 -m venv ~/Desktop/flaskor/venv
+source ~/Desktop/flaskor/venv/bin/activate
+cd ~/Desktop/flaskor/flask-crud-bootstrap
+```
+
+---
+
+#### uninstall all but basics / reset pip:
 ```
 pip list | grep -A 100 '\---' | grep -Ev '(\---)|(^pip)|(setuptools)' | cut -d ' ' -f 1 | sed -r 's=(.*)=yes| pip uninstall \1='
 ```
 
 ---
 
-- install flask
+#### formatters:
 ```
-pip install bootstrap-flask
-pip install flask-sqlalchemy
-pip install flask-wtf
-```
-
-- get example skeleton from bootstrap-flask
-```
-git clone https://github.com/greyli/bootstrap-flask.git
-# git init myflask
-cp -R ~/Desktop/flaskor/bootstrap-flask/examples/bootstrap5/ ~/Desktop/flaskor/flask-crud-bootstrap
-cd ~/Desktop/flaskor/flask-crud-bootstrap/
-python ./app.py
-```
-
-- initial fixes
-```
-# pagination = Message.query.paginate(page, per_page=10)
- pagination = Message.query.paginate(per_page=10)
-```
-
-- serve bootstrap locally without cdn
-```
-app.config['BOOTSTRAP_SERVE_LOCAL'] = True
+djlint --reformat --format-css --format-js *.html
+black *.py
 ```
 
 ---
+
+#### example sqlalchemy raw sql:
+```
+db.session.execute('select "123" as "a", "333" as "b", "000" as "c"').columns(2).scalar()
+> > >  000
+```
+```
+users = db.session.execute('select * from UsersId')
+users.fetchone()
+```
+
+---
+
+#### OPTION: sqlalchemy+pymssql
+```
+#!/usr/bin/env python3
+
+# max version:
+# pip install sqlalchemy==1.3.24
+# pip install pymssql
+# pip install flask-sqlalchemy==2.5.0
+
+# from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
+# engine = create_engine(F"mssql+pymssql://{DB_USER}:{DB_PASS}@{DB_IP}/wwwMaintenance")
+# meta = MetaData()
+# taxes = Table( taxes, meta, Column('TaxCode', String, primary_key = True))
+# s = taxes.select()
+# conn = engine.connect()
+# result = conn.execute(s)
+# for row in result: print(row)
+```
+
+---
+
+#### OPTION pymssql
+```
+from pymssql import _mssql
+dbLink = _mssql.connect(server=F"{DB_IP}", user=F"{DB_USER}", password=F"{DB_PASS}", database="wwwMaintenance")
+dbLink.execute_query("SELECT * from taxes")
+
+for row in dbLink:
+    print(F"row {row['TaxCode']}")
+dbLink.close
+```
