@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
+# sqlalchemy needs to be 1.3.24 and flask_sqlalchemy 2.5.0 for mssql to work
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 from datetime import datetime as dt
 from flask import Flask, render_template, request, flash, Markup, redirect, url_for
 from flask_wtf import FlaskForm, CSRFProtect
@@ -6,6 +9,7 @@ from wtforms.validators import InputRequired, Length, Regexp
 from wtforms.fields import *
 from flask_bootstrap import Bootstrap5, SwitchField
 from flask_sqlalchemy import SQLAlchemy
+#, create_engine, MetaData, Table, Column, Integer, String
 
 app = Flask(__name__)
 app.secret_key = "dev"
@@ -14,9 +18,24 @@ app.config["BOOTSTRAP_SERVE_LOCAL"] = True
 app.config["WTF_CSRF_ENABLED"] = False
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+DB_IP = os.environ.get("DB_IP")
+DB_USER = os.environ.get("DB_USER")
+DB_PASS = os.environ.get("DB_PASS")
 
 bootstrap = Bootstrap5(app)
 db = SQLAlchemy(app)
+
+engine = create_engine(F"mssql+pymssql://{DB_USER}:{DB_PASS}@{DB_IP}/wwwMaintenance")
+meta = MetaData()
+taxes = Table(
+   'taxes', meta,
+   Column('TaxCode', String, primary_key = True),
+   Column('DescTax1', String),
+   Column('DescTax2', String),
+)
+s = taxes.select()
+
+
 # csrf = CSRFProtect(app)
 
 
@@ -113,12 +132,18 @@ def test_form():
     if "loginName" in request.args and formSearchLogin.validate():
         # exampleUser = DB_UserId.query.filter_by(loginName=formSearchLogin.data["loginName"]).first()
         # exampleUser = db.session.execute('select * from UsersId').scalars()
-        exampleUser = db.session.execute(
-            db.select(DB_UserId).where(
-                DB_UserId.loginName == formSearchLogin.data["loginName"]
-            )
-        ).scalar()
-        formUserDetail = FormUserDetail(obj=exampleUser)
+        # exampleUser = db.session.execute(f"select * from UsersId where loginName = '{formSearchLogin.data['loginName']}'").fetchone()
+
+        #exampleUser = db.session.execute(
+        #    db.select(DB_UserId).where(
+        #        DB_UserId.loginName == formSearchLogin.data["loginName"]
+        #    )
+        #).scalar()
+        #formUserDetail = FormUserDetail(obj=exampleUser)
+        conn = engine.connect()
+        result = conn.execute(s)
+        for row in result:
+           print (row)
         # assert False
 
     if formUserDetail.validate_on_submit():
