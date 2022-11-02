@@ -1,18 +1,27 @@
 {% extends 'base.html' %}
 {% from 'bootstrap5/form.html' import render_form, render_field, render_form_row %}
 {% block content %}
-    <h3>Search Login</h3>
-    <form method="GET">
+    <!-- form search users -->
+<form id="SearchLoginForm" action="" novalidate="" method="GET">
+  <fieldset class="form-group border">
+  <legend>Search Login</legend>
         {# {{ formSearchLogin.csrf_token }} #}
-        {{ render_form_row([formSearchLogin.loginName, formSearchLogin.submit], form_type="horizontal", col_map={'loginName': 'col-sm-11', 'submit': 'col-sm-1'}) }}
-    </form>
-    <h3>User info</h3>
-    <form method="post">
-        {{ render_field(formUserDetail.loginName) }}
-        {{ render_form_row([formUserDetail.firstName], form_type="horizontal", col_map={'firstName': 'col-sm-12'}) }}
-        {{ render_form_row([formUserDetail.lastName], form_type="horizontal", col_map={'lastName': 'col-sm-12'}) }}
-        {{ render_field(formUserDetail.submit) }}
-    </form>
+        {{ render_form_row([formSearchLogin.loginName, formSearchLogin.submit], form_type="horizontal", col_map={'loginName': 'col-sm-9', 'submit': 'col-sm-2'}, button_style="secondary") }}
+  </fieldset>
+</form>
+    <!-- end form search users -->
+    <!-- form update users -->
+<form id="UserInfoForm" action="" novalidate="" method="POST">
+  <fieldset class="form-group border">
+  <legend>User Info</legend>
+        {{ render_form_row([formUserDetail.loginName], form_type="horizontal", form_group_classes='col-sm-9') }}
+        {{ render_form_row([formUserDetail.firstName], form_type="horizontal", form_group_classes='col-sm-9') }}
+        {{ render_form_row([formUserDetail.lastName], form_type="horizontal", form_group_classes='col-sm-9') }}
+        {{ render_form_row([formUserDetail.submit], form_type="horizontal", horizontal_columns=('sm', 0, 2), button_style="secondary" ) }}
+  </fieldset>
+</form>
+    <!-- end form update users -->
+
     {#
     <h2>Render a form with render_form</h2>
     {{ render_form(form) }}
@@ -36,5 +45,5 @@
     {{ render_form_row([form.remember]) }}
     {{ render_form_row([form.submit]) }}
     </form>
-#}
+    #}
 {% endblock %}
