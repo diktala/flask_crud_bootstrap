@@ -93,6 +93,34 @@ class FormUserDetail(FlaskForm):
     submit = SubmitField()
 
 
+def queryDBrow(query, params=""):
+    dbLink.execute_query(query, params)
+    queryResult = {}
+    for row in dbLink:
+        for column in row.keys():
+            if isinstance(column, str):
+                queryResult.update({column: row[column]})
+        break
+    dbLink.close
+    return queryResult
+
+
+def queryDBscalar(query, params=""):
+    queryResult = dbLink.execute_scalar(query, params)
+    dbLink.close
+    return queryResult
+
+
+def isUserExist(loginName):
+    isUserExist = queryDBscalar(
+        "SELECT count(*) as 'counter' from UsersId where lower(LoginName) = lower(%s)",
+        loginName,
+    )
+    if isUserExist != 1:
+        isUserExist = None
+    return isUserExist
+
+
 @app.before_first_request
 def before_first_request_func():
     db.drop_all()
@@ -122,34 +150,25 @@ def test_form():
     if request.method == "GET" and request.args.get("LoginName") is not None:
         formSearchLogin.loginName.data = request.args.get("LoginName")
 
-    if "loginName" in request.args and formSearchLogin.validate():
-        # using sqlalchemy
-        exampleUser = db.session.execute(
-            db.select(DB_UserId).where(
-                DB_UserId.loginName == formSearchLogin.data["loginName"]
-            )
-        ).scalar()
-        formUserDetail = FormUserDetail(obj=exampleUser)
-
-        # using pure pymssql
-        dbLink.execute_query("SELECT * from taxes")
-        for row in dbLink:
-            print(f"TaxCode: {row['TaxCode']} -- Tax1: {row['Tax1']}")
-        print(f"Rows affected: {dbLink.rows_affected}")
-        dbLink.close
-
-        # using pure pymssql
-        isUserExist = dbLink.execute_scalar(
-            "SELECT count(*) as 'counter' from UsersId where lower(LoginName) = lower(%s)",
+    if (
+        "loginName" in request.args
+        and formSearchLogin.validate()
+        and isUserExist(formSearchLogin.data["loginName"])
+    ):
+        usersDict = queryDBrow(
+            "SELECT FirstName, LastName from UsersId where LoginName = %s",
             formSearchLogin.data["loginName"],
         )
-        print(f"isUserExist: {isUserExist}")
-        dbLink.close
+        userInfoModel = DB_UserId()
+        userInfoModel.loginName = formSearchLogin.data["loginName"]
+        formUserDetail = FormUserDetail(obj=userInfoModel)
+        formUserDetail.firstName.data = usersDict["FirstName"]
+        formUserDetail.lastName.data = usersDict["LastName"]
 
     if formUserDetail.validate_on_submit():
         try:
-            formUserDetail.populate_obj(exampleUser)
-            db.session.add(exampleUser)
+            formUserDetail.populate_obj(userInfoModel)
+            db.session.add(userInfoModel)
             db.session.commit()
             flash('LoginName="' + formUserDetail.data["loginName"] + '"', "success")
             # return redirect(url_for('test_form'))
