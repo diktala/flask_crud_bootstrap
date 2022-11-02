@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-# sqlalchemy needs to be 1.3.24 and flask_sqlalchemy 2.5.0 for mssql to work
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 from datetime import datetime as dt
 from flask import Flask, render_template, request, flash, Markup, redirect, url_for
 from flask_wtf import FlaskForm, CSRFProtect
@@ -9,7 +7,7 @@ from wtforms.validators import InputRequired, Length, Regexp
 from wtforms.fields import *
 from flask_bootstrap import Bootstrap5, SwitchField
 from flask_sqlalchemy import SQLAlchemy
-#, create_engine, MetaData, Table, Column, Integer, String
+from pymssql import _mssql
 
 app = Flask(__name__)
 app.secret_key = "dev"
@@ -24,19 +22,14 @@ DB_PASS = os.environ.get("DB_PASS")
 
 bootstrap = Bootstrap5(app)
 db = SQLAlchemy(app)
-
-engine = create_engine(F"mssql+pymssql://{DB_USER}:{DB_PASS}@{DB_IP}/wwwMaintenance")
-meta = MetaData()
-taxes = Table(
-   'taxes', meta,
-   Column('TaxCode', String, primary_key = True),
-   Column('DescTax1', String),
-   Column('DescTax2', String),
-)
-s = taxes.select()
-
-
 # csrf = CSRFProtect(app)
+
+dbLink = _mssql.connect(
+    server=f"{DB_IP}",
+    user=f"{DB_USER}",
+    password=f"{DB_PASS}",
+    database="wwwMaintenance",
+)
 
 
 class DB_UserId(db.Model):
@@ -130,21 +123,28 @@ def test_form():
         formSearchLogin.loginName.data = request.args.get("LoginName")
 
     if "loginName" in request.args and formSearchLogin.validate():
-        # exampleUser = DB_UserId.query.filter_by(loginName=formSearchLogin.data["loginName"]).first()
-        # exampleUser = db.session.execute('select * from UsersId').scalars()
-        # exampleUser = db.session.execute(f"select * from UsersId where loginName = '{formSearchLogin.data['loginName']}'").fetchone()
+        # using sqlalchemy
+        exampleUser = db.session.execute(
+            db.select(DB_UserId).where(
+                DB_UserId.loginName == formSearchLogin.data["loginName"]
+            )
+        ).scalar()
+        formUserDetail = FormUserDetail(obj=exampleUser)
 
-        #exampleUser = db.session.execute(
-        #    db.select(DB_UserId).where(
-        #        DB_UserId.loginName == formSearchLogin.data["loginName"]
-        #    )
-        #).scalar()
-        #formUserDetail = FormUserDetail(obj=exampleUser)
-        conn = engine.connect()
-        result = conn.execute(s)
-        for row in result:
-           print (row)
-        # assert False
+        # using pure pymssql
+        dbLink.execute_query("SELECT * from taxes")
+        for row in dbLink:
+            print(f"TaxCode: {row['TaxCode']} -- Tax1: {row['Tax1']}")
+        print(f"Rows affected: {dbLink.rows_affected}")
+        dbLink.close
+
+        # using pure pymssql
+        isUserExist = dbLink.execute_scalar(
+            "SELECT count(*) as 'counter' from UsersId where lower(LoginName) = lower(%s)",
+            formSearchLogin.data["loginName"],
+        )
+        print(f"isUserExist: {isUserExist}")
+        dbLink.close
 
     if formUserDetail.validate_on_submit():
         try:
