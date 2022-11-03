@@ -24,13 +24,31 @@ bootstrap = Bootstrap5(app)
 db = SQLAlchemy(app)
 # csrf = CSRFProtect(app)
 
-dbLink = _mssql.connect(
-    server=f"{DB_IP}",
-    user=f"{DB_USER}",
-    password=f"{DB_PASS}",
-    database="wwwMaintenance",
-)
+class fake_mssql:
+    def connect(server,user,password,database):
+        return fake_mssql()
+    def execute_query(self, query, params):
+        return fake_mssql()
+    def execute_scalar(self, query, params):
+        return fake_mssql()
+    def close(self):
+        return fake_mssql()
 
+
+if DB_IP is None:
+    dbLink = fake_mssql.connect(
+        server=f"{DB_IP}",
+        user=f"{DB_USER}",
+        password=f"{DB_PASS}",
+        database="wwwMaintenance",
+    )
+else:
+    dbLink = _mssql.connect(
+        server=f"{DB_IP}",
+        user=f"{DB_USER}",
+        password=f"{DB_PASS}",
+        database="wwwMaintenance",
+    )
 
 class DB_UserId(db.Model):
     __tablename__ = "UsersId"
