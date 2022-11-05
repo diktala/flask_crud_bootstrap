@@ -1,4 +1,4 @@
-# flask-crud-bootstrap
+# flask_crud_bootstrap
 flask with crud form and bootstrap css
 
 ---
@@ -9,8 +9,8 @@ cd ~/Desktop
 mkdir ~/Desktop/flaskor; cd ~/Desktop/flaskor
 python3 -m venv venv
 source venv/bin/activate
-git clone git@github.com:diktala/flask-crud-bootstrap.git
-cd flask-crud-bootstrap
+git clone git@github.com:diktala/flask_crud_bootstrap.git
+cd flask_crud_bootstrap
 pip list
 pip install --upgrade pip
 
@@ -30,7 +30,7 @@ python ./app.py
 cd ~/Desktop/
 python3 -m venv ~/Desktop/flaskor/venv
 source ~/Desktop/flaskor/venv/bin/activate
-cd ~/Desktop/flaskor/flask-crud-bootstrap
+cd ~/Desktop/flaskor/flask_crud_bootstrap
 ```
 
 ---
