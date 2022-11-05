@@ -2,26 +2,51 @@
 {% from 'bootstrap5/form.html' import render_form, render_field, render_form_row %}
 {% block content %}
     <!-- form search users -->
-<form id="SearchLoginForm" action="" novalidate="" method="GET">
-  <fieldset class="form-group border">
-  <legend>Search Login</legend>
-        {# {{ formSearchLogin.csrf_token }} #}
-        {{ render_form_row([formSearchLogin.loginName, formSearchLogin.submit], form_type="horizontal", col_map={'loginName': 'col-sm-9', 'submit': 'col-sm-2'}, button_style="secondary") }}
-  </fieldset>
-</form>
+    <form id="SearchLoginForm" action="" novalidate="" method="GET">
+        <fieldset class="form-group border">
+            <legend>
+                Search Login
+            </legend>
+            {# {{ formSearchLogin.csrf_token }} #}
+            {{ render_form_row([formSearchLogin.loginName, formSearchLogin.submit], form_type="horizontal", col_map={'loginName': 'col-sm-9', 'submit': 'col-sm-2'}, button_style="secondary") }}
+        </fieldset>
+    </form>
     <!-- end form search users -->
     <!-- form update users -->
-<form id="UserInfoForm" action="" novalidate="" method="POST">
-  <fieldset class="form-group border">
-  <legend>User Info</legend>
-        {{ render_form_row([formUserDetail.loginName], form_type="horizontal", form_group_classes='col-sm-9') }}
-        {{ render_form_row([formUserDetail.firstName], form_type="horizontal", form_group_classes='col-sm-9') }}
-        {{ render_form_row([formUserDetail.lastName], form_type="horizontal", form_group_classes='col-sm-9') }}
-        {{ render_form_row([formUserDetail.submit], form_type="horizontal", horizontal_columns=('sm', 0, 2), button_style="secondary" ) }}
-  </fieldset>
-</form>
+    <form id="UserInfoForm" action="" novalidate="" method="POST">
+        <fieldset class="form-group border">
+            <legend>
+                User Info
+            </legend>
+            {{ render_form_row([formUserDetail.loginName], form_type="horizontal", form_group_classes='col-sm-9') }}
+            {{ render_form_row([formUserDetail.firstName], form_type="horizontal", form_group_classes='col-sm-9') }}
+            {{ render_form_row([formUserDetail.lastName], form_type="horizontal", form_group_classes='col-sm-9') }}
+            {{ render_form_row([formUserDetail.organizationName], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.address], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.city], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.state], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.postalCode], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.country], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.homePhone], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.accountNumber], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.language], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.paymentMethod], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.creditCardNumber], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.creditCardExpiry], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.bankName], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.checkNumber], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.bankAccount], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.identificationCard], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.authorizationCode], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.operatingSystem], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.operator], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.referredBy], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.notes], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.dateJoined], form_type="horizontal", form_group_classes="col-sm-9") }}
+            {{ render_form_row([formUserDetail.submit], form_type="horizontal", horizontal_columns=('sm', 0, 2), button_style="secondary" ) }}
+        </fieldset>
+    </form>
     <!-- end form update users -->
-
     {#
     <h2>Render a form with render_form</h2>
     {{ render_form(form) }}

@@ -1,53 +1,26 @@
 # -*- coding: utf-8 -*-
 import os
-from datetime import datetime as dt
 from flask import Flask, render_template, request, flash, Markup, redirect, url_for
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms.validators import InputRequired, Length, Regexp
 from wtforms.fields import *
 from flask_bootstrap import Bootstrap5, SwitchField
-from flask_sqlalchemy import SQLAlchemy
 from pymssql import _mssql
 
+
 class fake_mssql:
-    def connect(server,user,password,database):
+    def connect(server, user, password, database):
         return fake_mssql()
+
     def execute_query(self, query, params):
         return fake_mssql()
+
     def execute_scalar(self, query, params):
         return fake_mssql()
+
     def close(self):
         return fake_mssql()
 
-"""
-class DB_UserId(db.Model):
-    __tablename__ = "UsersId"
-    loginName = db.Column("LoginName", db.String(30), primary_key=True)
-    firstName = db.Column("FirstName", db.String(30), nullable=False)
-    lastName = db.Column("LastName", db.String(30), nullable=False)
-    organizationName = db.Column("OrganizationName", db.String(30), nullable=True)
-    address = db.Column("Address", db.String(30), nullable=True)
-    city = db.Column("City", db.String(30), nullable=True)
-    state = db.Column("State", db.String(30), nullable=True)
-    postalCode = db.Column("PostalCode", db.String(30), nullable=True)
-    country = db.Column("Country", db.String(30), nullable=True)
-    homePhone = db.Column("HomePhone", db.String(30), nullable=True)
-    accountNumber = db.Column("AccountNumber", db.String(30), nullable=True)
-    language = db.Column("Language", db.String(30), nullable=True)
-    paymentMethod = db.Column("PaymentMethod", db.String(30), nullable=True)
-    creditCardNumber = db.Column("CreditCardNumber", db.String(30), nullable=True)
-    creditCardExpiry = db.Column("CreditCardExpiry", db.String(30), nullable=True)
-    bankName = db.Column("BankName", db.String(30), nullable=True)
-    checkNumber = db.Column("CheckNumber", db.String(30), nullable=True)
-    bankAccount = db.Column("BankAccount", db.String(30), nullable=True)
-    identificationCard = db.Column("IdentificationCard", db.String(30), nullable=True)
-    authorizationCode = db.Column("AuthorizationCode", db.String(30), nullable=True)
-    operatingSystem = db.Column("OperatingSystem", db.String(30), nullable=True)
-    operator = db.Column("Operator", db.String(30), nullable=True)
-    referredBy = db.Column("ReferredBy", db.String(30), nullable=True)
-    notes = db.Column("Notes", db.String(254), nullable=True)
-    dateJoined = db.Column("DateJoined", db.String(30), nullable=True)
-"""
 
 class FormSearchLogin(FlaskForm):
     loginName = StringField(
@@ -78,41 +51,183 @@ class FormUserDetail(FlaskForm):
         description="",
         render_kw={"placeholder": "Customer last name"},
     )
+    firstName = StringField(
+        label="firstName",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "firstName"},
+    )
+    lastName = StringField(
+        label="lastName",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "lastName"},
+    )
+    organizationName = StringField(
+        label="organizationName",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "organizationName"},
+    )
+    address = StringField(
+        label="address",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "address"},
+    )
+    city = StringField(
+        label="city",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "city"},
+    )
+    state = StringField(
+        label="state",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "state"},
+    )
+    postalCode = StringField(
+        label="postalCode",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "postalCode"},
+    )
+    country = StringField(
+        label="country",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "country"},
+    )
+    homePhone = StringField(
+        label="homePhone",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "homePhone"},
+    )
+    accountNumber = StringField(
+        label="accountNumber",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "accountNumber"},
+    )
+    language = StringField(
+        label="language",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "language"},
+    )
+    paymentMethod = StringField(
+        label="paymentMethod",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "paymentMethod"},
+    )
+    creditCardNumber = StringField(
+        label="creditCardNumber",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "creditCardNumber"},
+    )
+    creditCardExpiry = StringField(
+        label="creditCardExpiry",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "creditCardExpiry"},
+    )
+    bankName = StringField(
+        label="bankName",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "bankName"},
+    )
+    checkNumber = StringField(
+        label="checkNumber",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "checkNumber"},
+    )
+    bankAccount = StringField(
+        label="bankAccount",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "bankAccount"},
+    )
+    identificationCard = StringField(
+        label="identificationCard",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "identificationCard"},
+    )
+    authorizationCode = StringField(
+        label="authorizationCode",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "authorizationCode"},
+    )
+    operatingSystem = StringField(
+        label="operatingSystem",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "operatingSystem"},
+    )
+    operator = StringField(
+        label="operator",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "operator"},
+    )
+    referredBy = StringField(
+        label="referredBy",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "referredBy"},
+    )
+    notes = StringField(
+        label="notes",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "notes"},
+    )
+    dateJoined = StringField(
+        label="dateJoined",
+        validators=[InputRequired(), Length(1, 30)],
+        description="",
+        render_kw={"placeholder": "dateJoined"},
+    )
     submit = SubmitField()
 
 
 def create_app(test_config=None):
-    app = Flask(__name__)
-    app.secret_key = "dev"
-    # set bootstrap to be served locally
-    app.config["BOOTSTRAP_SERVE_LOCAL"] = True
-    app.config["WTF_CSRF_ENABLED"] = False
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    DB_IP = os.environ.get("DB_IP")
-    DB_USER = os.environ.get("DB_USER")
-    DB_PASS = os.environ.get("DB_PASS")
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.from_mapping(
+        SECRET_KEY="dev",
+        BOOTSTRAP_SERVE_LOCAL=True,
+        WTF_CSRF_ENABLED=False,
+    )
+    app.config["DB_IP"] = os.environ.get("DB_IP")
+    app.config["DB_USER"] = os.environ.get("DB_USER")
+    app.config["DB_PASS"] = os.environ.get("DB_PASS")
+    # DB_IP = os.environ.get("DB_IP")
+    # DB_USER = os.environ.get("DB_USER")
+    # DB_PASS = os.environ.get("DB_PASS")
 
     bootstrap = Bootstrap5(app)
-    db = SQLAlchemy(app)
-    # csrf = CSRFProtect(app)
 
-
-    if DB_IP is None:
+    if app.config["DB_IP"] is None:
         dbLink = fake_mssql.connect(
-            server=f"{DB_IP}",
-            user=f"{DB_USER}",
-            password=f"{DB_PASS}",
-            database="wwwMaintenance",
+            server="",
+            user="",
+            password="",
+            database="",
         )
     else:
         dbLink = _mssql.connect(
-            server=f"{DB_IP}",
-            user=f"{DB_USER}",
-            password=f"{DB_PASS}",
+            server=app.config["DB_IP"],
+            user=app.config["DB_USER"],
+            password=app.config["DB_PASS"],
             database="wwwMaintenance",
         )
-
 
     def queryDBrow(query, params=""):
         dbLink.execute_query(query, params)
@@ -125,12 +240,10 @@ def create_app(test_config=None):
         dbLink.close
         return queryResult
 
-
     def queryDBscalar(query, params=""):
         queryResult = dbLink.execute_scalar(query, params)
         dbLink.close
         return queryResult
-
 
     def isUserExist(loginName):
         isUserExist = queryDBscalar(
@@ -140,7 +253,6 @@ def create_app(test_config=None):
         if isUserExist != 1:
             isUserExist = None
         return isUserExist
-
 
     @app.before_first_request
     def before_first_request_func():
@@ -159,27 +271,54 @@ def create_app(test_config=None):
         db.session.commit()
         """
 
-
     @app.route("/")
     def index():
         return render_template("index.html")
-
 
     @app.route("/form", methods=["GET", "POST"])
     def test_form():
         formSearchLogin = FormSearchLogin(request.args)
         formUserDetail = FormUserDetail()
-    
+
         if request.method == "GET" and request.args.get("LoginName") is not None:
             formSearchLogin.loginName.data = request.args.get("LoginName")
-    
+
         if (
             "loginName" in request.args
             and formSearchLogin.validate()
             and isUserExist(formSearchLogin.data["loginName"])
         ):
             usersDict = queryDBrow(
-                "SELECT FirstName, LastName from UsersId where LoginName = %s",
+                """SELECT
+                  FirstName,
+                  LastName,
+                  OrganizationName,
+                  Address,
+                  City,
+                  State,
+                  PostalCode,
+                  Country,
+                  HomePhone,
+                  AccountNumber,
+                  Language,
+                  PaymentMethod,
+                  CreditCardNumber,
+                  CreditCardExpiry,
+                  BankName,
+                  CheckNumber,
+                  BankAccount,
+                  IdentificationCard,
+                  AuthorizationCode,
+                  OperatingSystem,
+                  Operator,
+                  ReferredBy,
+                  Notes,
+                  DateJoined
+                FROM
+                  UsersId
+                WHERE
+                  LoginName = %s
+                """,
                 formSearchLogin.data["loginName"],
             )
             """
@@ -190,6 +329,28 @@ def create_app(test_config=None):
             formUserDetail = FormUserDetail()
             formUserDetail.firstName.data = usersDict["FirstName"]
             formUserDetail.lastName.data = usersDict["LastName"]
+            formUserDetail.organizationName.data = usersDict["OrganizationName"]
+            formUserDetail.address.data = usersDict["Address"]
+            formUserDetail.city.data = usersDict["City"]
+            formUserDetail.state.data = usersDict["State"]
+            formUserDetail.postalCode.data = usersDict["PostalCode"]
+            formUserDetail.country.data = usersDict["Country"]
+            formUserDetail.homePhone.data = usersDict["HomePhone"]
+            formUserDetail.accountNumber.data = usersDict["AccountNumber"]
+            formUserDetail.language.data = usersDict["Language"]
+            formUserDetail.paymentMethod.data = usersDict["PaymentMethod"]
+            formUserDetail.creditCardNumber.data = usersDict["CreditCardNumber"]
+            formUserDetail.creditCardExpiry.data = usersDict["CreditCardExpiry"]
+            formUserDetail.bankName.data = usersDict["BankName"]
+            formUserDetail.checkNumber.data = usersDict["CheckNumber"]
+            formUserDetail.bankAccount.data = usersDict["BankAccount"]
+            formUserDetail.identificationCard.data = usersDict["IdentificationCard"]
+            formUserDetail.authorizationCode.data = usersDict["AuthorizationCode"]
+            formUserDetail.operatingSystem.data = usersDict["OperatingSystem"]
+            formUserDetail.operator.data = usersDict["Operator"]
+            formUserDetail.referredBy.data = usersDict["ReferredBy"]
+            formUserDetail.notes.data = usersDict["Notes"]
+            formUserDetail.dateJoined.data = usersDict["DateJoined"]
 
         if formUserDetail.validate_on_submit():
             try:
