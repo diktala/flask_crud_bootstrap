@@ -254,23 +254,6 @@ def create_app(test_config=None):
             isUserExist = None
         return isUserExist
 
-    @app.before_first_request
-    def before_first_request_func():
-        """
-        db.drop_all()
-        db.create_all()
-        today = str(dt.now())
-        names = {"alpha", "bravo", "charly"}
-        for name in names:
-            row = DB_UserId(
-                loginName=f"{name}",
-                firstName=f"{name} First {today[0:10]}",
-                lastName=f"{name} Last {today[10:19]}",
-            )
-            db.session.add(row)
-        db.session.commit()
-        """
-
     @app.route("/")
     def index():
         return render_template("index.html")
