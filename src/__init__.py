@@ -338,30 +338,31 @@ def create_app(test_config=None):
             formUserDetail = FormUserDetail(obj=userInfoModel)
             """
             formUserDetail = FormUserDetail()
-            formUserDetail.firstName.data = usersDict["FirstName"]
-            formUserDetail.lastName.data = usersDict["LastName"]
-            formUserDetail.organizationName.data = usersDict["OrganizationName"]
-            formUserDetail.address.data = usersDict["Address"]
-            formUserDetail.city.data = usersDict["City"]
-            formUserDetail.state.data = usersDict["State"]
-            formUserDetail.postalCode.data = usersDict["PostalCode"]
-            formUserDetail.country.data = usersDict["Country"]
-            formUserDetail.homePhone.data = usersDict["HomePhone"]
-            formUserDetail.accountNumber.data = usersDict["AccountNumber"]
-            formUserDetail.language.data = usersDict["Language"]
-            formUserDetail.paymentMethod.data = usersDict["PaymentMethod"]
-            formUserDetail.creditCardNumber.data = usersDict["CreditCardNumber"]
-            formUserDetail.creditCardExpiry.data = usersDict["CreditCardExpiry"]
-            formUserDetail.bankName.data = usersDict["BankName"]
-            formUserDetail.checkNumber.data = usersDict["CheckNumber"]
-            formUserDetail.bankAccount.data = usersDict["BankAccount"]
-            formUserDetail.identificationCard.data = usersDict["IdentificationCard"]
-            formUserDetail.authorizationCode.data = usersDict["AuthorizationCode"]
-            formUserDetail.operatingSystem.data = usersDict["OperatingSystem"]
-            formUserDetail.operator.data = usersDict["Operator"]
-            formUserDetail.referredBy.data = usersDict["ReferredBy"]
-            formUserDetail.notes.data = usersDict["Notes"]
-            formUserDetail.dateJoined.data = usersDict["DateJoined"]
+            formUserDetail.loginName.data = str(formSearchLogin.data["loginName"])
+            formUserDetail.firstName.data = str(usersDict["FirstName"])
+            formUserDetail.lastName.data = str(usersDict["LastName"])
+            formUserDetail.organizationName.data = str(usersDict["OrganizationName"])
+            formUserDetail.address.data = str(usersDict["Address"])
+            formUserDetail.city.data = str(usersDict["City"])
+            formUserDetail.state.data = str(usersDict["State"])
+            formUserDetail.postalCode.data = str(usersDict["PostalCode"])
+            formUserDetail.country.data = str(usersDict["Country"])
+            formUserDetail.homePhone.data = str(usersDict["HomePhone"])
+            formUserDetail.accountNumber.data = str(usersDict["AccountNumber"])
+            formUserDetail.language.data = str(usersDict["Language"])
+            formUserDetail.paymentMethod.data = str(usersDict["PaymentMethod"])
+            formUserDetail.creditCardNumber.data = str(usersDict["CreditCardNumber"])
+            formUserDetail.creditCardExpiry.data = str(usersDict["CreditCardExpiry"])
+            formUserDetail.bankName.data = str(usersDict["BankName"])
+            formUserDetail.checkNumber.data = str(usersDict["CheckNumber"])
+            formUserDetail.bankAccount.data = str(usersDict["BankAccount"])
+            formUserDetail.identificationCard.data = str(usersDict["IdentificationCard"])
+            formUserDetail.authorizationCode.data = str(usersDict["AuthorizationCode"])
+            formUserDetail.operatingSystem.data = str(usersDict["OperatingSystem"])
+            formUserDetail.operator.data = str(usersDict["Operator"])
+            formUserDetail.referredBy.data = str(usersDict["ReferredBy"])
+            formUserDetail.notes.data = str(usersDict["Notes"])
+            formUserDetail.dateJoined.data = str(usersDict["DateJoined"])
 
         if formUserDetail.validate_on_submit():
             try:
