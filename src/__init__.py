@@ -2,6 +2,8 @@
 import os
 import re
 from flask import Flask, render_template, request, flash, Markup, redirect, url_for
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms.validators import InputRequired, Optional, Length, Regexp
 from wtforms.fields import *
@@ -26,7 +28,13 @@ class fake_mssql:
 class FormSearchLogin(FlaskForm):
     loginName = StringField(
         label="Login name",
-        validators=[InputRequired(), Regexp("^[a-z_.-]+$",flags=re.IGNORECASE,  message="incorrect characters used"), Length(1, 20)],
+        validators=[
+            InputRequired(),
+            Regexp(
+                "^[a-z_.-]+$", flags=re.IGNORECASE, message="incorrect characters used"
+            ),
+            Length(1, 20),
+        ],
         description="",
         render_kw={"placeholder": "Customer username"},
     )
@@ -209,11 +217,18 @@ def create_app(test_config=None):
     app.config["DB_IP"] = os.environ.get("DB_IP")
     app.config["DB_USER"] = os.environ.get("DB_USER")
     app.config["DB_PASS"] = os.environ.get("DB_PASS")
-    # DB_IP = os.environ.get("DB_IP")
-    # DB_USER = os.environ.get("DB_USER")
-    # DB_PASS = os.environ.get("DB_PASS")
+    app.config["HTTP_USER"] = os.environ.get("HTTP_USER")
+    app.config["HTTP_PASS"] = os.environ.get("HTTP_PASS")
 
     bootstrap = Bootstrap5(app)
+
+    auth = HTTPBasicAuth()
+    if app.config["HTTP_USER"] and app.config["HTTP_PASS"]:
+        authorizedUsers = {
+            app.config["HTTP_USER"]: generate_password_hash(app.config["HTTP_PASS"])
+        }
+    else:
+        authorizedUsers = None
 
     if app.config["DB_IP"] is None:
         dbLink = fake_mssql.connect(
@@ -255,11 +270,23 @@ def create_app(test_config=None):
             isUserExist = None
         return isUserExist
 
+    @auth.verify_password
+    def verify_password(username, password):
+        if authorizedUsers is None:
+            return True
+
+        if username in authorizedUsers and check_password_hash(
+            authorizedUsers.get(username), password
+        ):
+            return username
+
     @app.route("/")
+    @auth.login_required
     def index():
         return render_template("index.html")
 
     @app.route("/form", methods=["GET", "POST"])
+    @auth.login_required
     def test_form():
         formSearchLogin = FormSearchLogin(request.args)
         formUserDetail = FormUserDetail()
