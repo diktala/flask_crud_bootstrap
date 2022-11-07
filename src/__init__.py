@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
+import re
 from flask import Flask, render_template, request, flash, Markup, redirect, url_for
 from flask_wtf import FlaskForm, CSRFProtect
-from wtforms.validators import InputRequired, Length, Regexp
+from wtforms.validators import InputRequired, Optional, Length, Regexp
 from wtforms.fields import *
 from flask_bootstrap import Bootstrap5, SwitchField
 from pymssql import _mssql
@@ -25,7 +26,7 @@ class fake_mssql:
 class FormSearchLogin(FlaskForm):
     loginName = StringField(
         label="Login name",
-        validators=[InputRequired(), Length(1, 20)],
+        validators=[InputRequired(), Regexp("^[a-z_.-]+$",flags=re.IGNORECASE,  message="incorrect characters used"), Length(1, 20)],
         description="",
         render_kw={"placeholder": "Customer username"},
     )
