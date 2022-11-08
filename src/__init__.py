@@ -262,12 +262,14 @@ def create_app(test_config=None):
         return queryResult
 
     def isUserExist(loginName):
-        isUserExist = queryDBscalar(
-            "SELECT count(*) as 'counter' from UsersId where lower(LoginName) = lower(%s)",
-            loginName,
-        )
-        if isUserExist != 1:
-            isUserExist = None
+        isUserExist = None
+        if loginName:
+            isUserExist = queryDBscalar(
+                """SELECT count(*) as 'counter'
+                 FROM UsersId
+                 WHERE lower(LoginName) = lower(%s)""",
+                loginName,
+            )
         return isUserExist
 
     @auth.verify_password
@@ -356,7 +358,9 @@ def create_app(test_config=None):
             formUserDetail.bankName.data = str(usersDict["BankName"])
             formUserDetail.checkNumber.data = str(usersDict["CheckNumber"])
             formUserDetail.bankAccount.data = str(usersDict["BankAccount"])
-            formUserDetail.identificationCard.data = str(usersDict["IdentificationCard"])
+            formUserDetail.identificationCard.data = str(
+                usersDict["IdentificationCard"]
+            )
             formUserDetail.authorizationCode.data = str(usersDict["AuthorizationCode"])
             formUserDetail.operatingSystem.data = str(usersDict["OperatingSystem"])
             formUserDetail.operator.data = str(usersDict["Operator"])
@@ -383,7 +387,10 @@ def create_app(test_config=None):
                 flash("Error: could not save.", "danger")
 
         return render_template(
-            "form.html", formSearchLogin=formSearchLogin, formUserDetail=formUserDetail
+            "form.html",
+            formSearchLogin=formSearchLogin,
+            formUserDetail=formUserDetail,
+            isUserExist=isUserExist(formSearchLogin.data["loginName"]),
         )
 
     return app

@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
 {% from 'bootstrap5/form.html' import render_form, render_field, render_form_row %}
+{% if isUserExist %}
+    {%    set buttonStyle = "success" %}
+    {%    set isValid     = "is-valid" %}
+{% else %}
+    {%    set buttonStyle = "secondary" %}
+    {%    set isValid     = "is-invalid" %}
+{% endif %}
 {% block content %}
     <!-- form search users -->
     <form id="SearchLoginForm" action="" novalidate="" method="GET">
@@ -9,7 +16,8 @@
                     Search Login
                 </legend>
                 {# {{ formSearchLogin.csrf_token }} #}
-                {{ render_form_row([formSearchLogin.loginName, formSearchLogin.submit], col_class_default='col-5', form_type="horizontal", col_map={'loginName': 'col-sm-10', 'submit': 'col-sm-2'}, button_style="secondary") }}
+                {{ render_field(formSearchLogin.loginName, form_type="horizontal", horizontal_columns=("sm",3,7), form_group_classes="mb-0", class=isValid ) }}
+                {{ render_field(formSearchLogin.submit, button_style=buttonStyle, form_group_classes="mb-0", class="offset-lg-3 col-lg-7") }}
             </fieldset>
         </div>
     </form>
