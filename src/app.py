@@ -38,7 +38,7 @@ class FormSearchLogin(FlaskForm):
         description="",
         render_kw={"placeholder": "Customer username"},
     )
-    submit = SubmitField()
+    submit = SubmitField(label="Search")
 
 
 class FormUserDetail(FlaskForm):
@@ -204,7 +204,7 @@ class FormUserDetail(FlaskForm):
         description="",
         render_kw={"placeholder": "dateJoined"},
     )
-    submit = SubmitField()
+    submit = SubmitField(label="Update")
 
 
 def create_app(test_config=None):
