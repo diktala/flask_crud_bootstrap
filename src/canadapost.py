@@ -48,6 +48,19 @@ headers = {
    ,'Referer'    : API_REFERER
 }
 
+payload = {
+  'Key' : API_KEY1
+, 'Country' : 'CAN'
+, 'LanguagePreference' : 'fr'
+, 'SearchFor' : 'Everything'
+, 'OrderBy' : 'UserLocation'
+, '$block' : 'true'
+, '$cache' : 'true'
+, 'MaxResults' : '500'
+, 'SearchTerm' : ''
+, 'LastId' : ''
+}
+
 def _sanitizeString(stringToCheck=''):
     stringReturned = ''
     if (isinstance(stringToCheck, str)
@@ -59,51 +72,29 @@ def _sanitizeString(stringToCheck=''):
         
 def getIndexFromPostal(searchTerm='H0H 0H0'):
     searchTerm = _sanitizeString(searchTerm)
-    payload = {
-      'Key' : API_KEY1
-    , 'Country' : 'CAN'
-    , 'LanguagePreference' : 'fr'
-    , 'SearchFor' : 'Everything'
-    , 'OrderBy' : 'UserLocation'
-    , '$block' : 'true'
-    , '$cache' : 'true'
-    , 'MaxResults' : '500'
-    , 'SearchTerm' : searchTerm
-    , 'LastId' : ''
-    }
+    payload['SearchTerm'] = searchTerm
     url = 'https://ws1.postescanada-canadapost.ca'
     url += '/AddressComplete/Interactive/Find/v2.10/json3ex.ws'
+    indexID = ''
     try:
         r = requests.get(url, headers = headers, params=payload )
         indexID = r.json()[list(r.json().keys())[0]][0]['Id']
-        return indexID
     except:
-        return ''
+        pass
+
+    return indexID
 
 
 def getIDsFromIndex(Index=''):
     Index = _sanitizeString(Index)
-    payload = {
-      'Key' : API_KEY1
-    , 'Country' : 'CAN'
-    , 'LanguagePreference' : 'fr'
-    , 'SearchFor' : 'Everything'
-    , 'OrderBy' : 'UserLocation'
-    , '$block' : 'true'
-    , '$cache' : 'true'
-    , 'MaxResults' : '500'
-    , 'SearchTerm' : ''
-    , 'LastId' : Index
-    }
+    payload['LastId'] = Index
     url = 'https://ws1.postescanada-canadapost.ca'
     url += '/AddressComplete/Interactive/Find/v2.10/json3ex.ws'
     listOfAddresses = {}
-
     try:
         s = requests.get(url, headers = headers, params=payload )
         for eachID in s.json()[list(s.json().keys())[0]]:
             listOfAddresses[ eachID['Id'] ] = eachID['Text']+ ', '+eachID['Description']
-
     except:
         pass
 

@@ -9,6 +9,7 @@ from wtforms.validators import InputRequired, Optional, Length, Regexp
 from wtforms.fields import *
 from flask_bootstrap import Bootstrap5, SwitchField
 from pymssql import _mssql
+from src.canadapost import getIDsFromIndex, getIndexFromPostal, getAddressFromID
 
 
 class fake_mssql:
