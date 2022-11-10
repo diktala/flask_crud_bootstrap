@@ -36,7 +36,7 @@
                 {{ render_form_row([formUserDetail.address], form_type="horizontal", form_group_classes="col-sm-12") }}
                 {{ render_form_row([formUserDetail.city], form_type="horizontal", form_group_classes="col-sm-12") }}
                 {{ render_form_row([formUserDetail.state], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.postalCode], form_type="horizontal", form_group_classes="col-sm-12") }}
+                {{ render_form_row([formUserDetail.postalCode, formUserDetail.lookupAddress, formUserDetail.addressSelect, formUserDetail.applyAddress], form_type="inline", col_map={'postalCode': 'offset-sm-2 col-sm-2', 'lookupAddress': 'col-sm-1', 'addressSelect': 'offset-sm-1 col-sm-4', 'applyAddress': 'col-sm-1'}, button_style="secondary", form_group_classes="col-sm-12") }}
                 {{ render_form_row([formUserDetail.country], form_type="horizontal", form_group_classes="col-sm-12") }}
                 {{ render_form_row([formUserDetail.homePhone], form_type="horizontal", form_group_classes="col-sm-12") }}
                 {{ render_form_row([formUserDetail.accountNumber], form_type="horizontal", form_group_classes="col-sm-12") }}
@@ -54,7 +54,7 @@
                 {{ render_form_row([formUserDetail.referredBy], form_type="horizontal", form_group_classes="col-sm-12") }}
                 {{ render_form_row([formUserDetail.notes], form_type="horizontal", form_group_classes="col-sm-12") }}
                 {{ render_form_row([formUserDetail.dateJoined], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.submit], form_type="horizontal", horizontal_columns=("sm", 0, 2), button_style="secondary" ) }}
+                {{ render_form_row([formUserDetail.updateUser], form_type="horizontal", horizontal_columns=("sm", 0, 2), button_style="secondary" ) }}
             </fieldset>
         </div>
     </form>

@@ -103,6 +103,15 @@ class FormUserDetail(FlaskForm):
         description="",
         render_kw={"placeholder": "postalCode"},
     )
+    lookupAddress = SubmitField(label="Lookup")
+    addressSelect = SelectField(
+        label="Select Address",
+        choices=[
+            ("aaa", "<<< Lookup"),
+        ],
+        description="",
+    )
+    applyAddress = SubmitField(label="Apply")
     country = StringField(
         label="country",
         validators=[InputRequired(), Length(1, 30)],
@@ -205,7 +214,7 @@ class FormUserDetail(FlaskForm):
         description="",
         render_kw={"placeholder": "dateJoined"},
     )
-    submit = SubmitField(label="Update")
+    updateUser = SubmitField(label="Update")
 
 
 def create_app(test_config=None):
@@ -298,10 +307,12 @@ def create_app(test_config=None):
             formSearchLogin.loginName.data = request.args.get("LoginName")
 
         if (
-            "loginName" in request.args
+            request.method == "GET"
+            and "loginName" in request.args
             and formSearchLogin.validate()
             and isUserExist(formSearchLogin.data["loginName"])
         ):
+            flash("Debug: indicating location AAA ....", "warning")
             usersDict = queryDBrow(
                 """SELECT
                   FirstName,
@@ -369,7 +380,43 @@ def create_app(test_config=None):
             formUserDetail.notes.data = str(usersDict["Notes"])
             formUserDetail.dateJoined.data = str(usersDict["DateJoined"])
 
-        if formUserDetail.validate_on_submit():
+        if (
+            request.method == "POST"
+            and formUserDetail.lookupAddress.data
+            and formUserDetail.postalCode.data
+        ):
+            flash("Debug: indicating location 'lookupAddress' ....", "warning")
+            flash(f"Debug: {formUserDetail.postalCode.data}", "warning")
+            indexID = getIndexFromPostal(formUserDetail.postalCode.data)
+            listOfAddresses = getIDsFromIndex(indexID)
+            myChoices = [
+                ("", "Refine address ..."),
+            ]
+            myChoices += [(k, v) for k, v in listOfAddresses.items()]
+            formUserDetail.addressSelect.choices = myChoices
+
+        if (
+            request.method == "POST"
+            and formUserDetail.applyAddress.data
+            and formUserDetail.addressSelect.data
+        ):
+            flash("Debug: indicating location 'applyAddress' ....", "warning")
+            flash(f"Debug: {formUserDetail.addressSelect.data}", "warning")
+            postalAddress = getAddressFromID(formUserDetail.addressSelect.data)
+            if len(postalAddress) >= 5:
+                formUserDetail.address.data = postalAddress["Line1"]
+                formUserDetail.city.data = postalAddress["City"]
+                formUserDetail.state.data = postalAddress["ProvinceCode"]
+                formUserDetail.country.data = "Canada"
+                formUserDetail.postalCode.data = postalAddress["PostalCode"]
+                flash(f"address applied: {formUserDetail.address.data}", "primary")
+
+        if (
+            request.method == "POST"
+            and formUserDetail.updateUser.data
+            and formUserDetail.validate_on_submit()
+        ):
+            flash("Debug: indicating location 'updateUser' ....", "warning")
             try:
                 """
                 formUserDetail.populate_obj(userInfoModel)
