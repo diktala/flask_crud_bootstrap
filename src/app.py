@@ -131,17 +131,30 @@ class FormUserDetail(FlaskForm):
         description="",
         render_kw={"placeholder": "accountNumber"},
     )
-    language = StringField(
+    language = SelectField(
         label="language",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional()
+            , Regexp( "^EN$", message="Choose EN or none, defaults to FR")
+            , Length(1, 30)],
+        choices=[
+            ("", "FR"),
+            ("EN", "EN"),
+        ],
         description="",
-        render_kw={"placeholder": "language"},
     )
-    paymentMethod = StringField(
+    paymentMethod = SelectField(
         label="paymentMethod",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional()
+            , Regexp(
+                "^(VISA|MC)$", message="Choose VISA or MC or none"
+            )
+            , Length(1, 30)],
+        choices=[
+            ("VISA", "VISA"),
+            ("MC", "MC"),
+            ("", "Cheque"),
+        ],
         description="",
-        render_kw={"placeholder": "paymentMethod"},
     )
     creditCardNumber = StringField(
         label="creditCardNumber",
@@ -262,6 +275,7 @@ def create_app(test_config=None):
     def queryDBrow(query, params=""):
         dbLink.execute_query(query, params)
         queryResult = {}
+        # check dbLink is iterable i.e. not using fake_mssql
         if hasattr(dbLink, "__iter__"):
             for row in dbLink:
                 for column in row.keys():
@@ -330,8 +344,8 @@ def create_app(test_config=None):
                   Country,
                   HomePhone,
                   AccountNumber,
-                  Language,
-                  PaymentMethod,
+                  isnull(Language, '') as 'Language',
+                  isnull(PaymentMethod, '') as 'PaymentMethod',
                   CreditCardNumber,
                   CreditCardExpiry,
                   BankName,
@@ -368,8 +382,8 @@ def create_app(test_config=None):
             formUserDetail.country.data = str(usersDict["Country"])
             formUserDetail.homePhone.data = str(usersDict["HomePhone"])
             formUserDetail.accountNumber.data = str(usersDict["AccountNumber"])
-            formUserDetail.language.data = str(usersDict["Language"])
-            formUserDetail.paymentMethod.data = str(usersDict["PaymentMethod"])
+            formUserDetail.language.process_data(str(usersDict["Language"]).strip())
+            formUserDetail.paymentMethod.process_data(str(usersDict["PaymentMethod"].strip()))
             formUserDetail.creditCardNumber.data = str(usersDict["CreditCardNumber"])
             formUserDetail.creditCardExpiry.data = str(usersDict["CreditCardExpiry"])
             formUserDetail.bankName.data = str(usersDict["BankName"])
