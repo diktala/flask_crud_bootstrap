@@ -258,11 +258,12 @@ def create_app(test_config=None):
     def queryDBrow(query, params=""):
         dbLink.execute_query(query, params)
         queryResult = {}
-        for row in dbLink:
-            for column in row.keys():
-                if isinstance(column, str):
-                    queryResult.update({column: row[column]})
-            break
+        if hasattr(dbLink, "__iter__"):
+            for row in dbLink:
+                for column in row.keys():
+                    if isinstance(column, str):
+                        queryResult.update({column: row[column]})
+                break
         dbLink.close
         return queryResult
 
@@ -310,7 +311,7 @@ def create_app(test_config=None):
             request.method == "GET"
             and "loginName" in request.args
             and formSearchLogin.validate()
-            and isUserExist(formSearchLogin.data["loginName"])
+            and isUserExist(formSearchLogin.data["loginName"]) == 1
         ):
             flash("Debug: indicating location AAA ....", "warning")
             usersDict = queryDBrow(
