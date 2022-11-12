@@ -205,7 +205,7 @@ class FormUserDetail(FlaskForm):
     )
     notes = StringField(
         label="notes",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[InputRequired(), Length(1, 250)],
         description="",
         render_kw={"placeholder": "notes"},
     )
