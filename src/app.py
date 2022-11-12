@@ -108,7 +108,7 @@ class FormUserDetail(FlaskForm):
     addressSelect = SelectField(
         label="Select Address",
         choices=[
-            ("aaa", "<<< Lookup"),
+            ("", "<<< Lookup"),
         ],
         description="",
     )
@@ -133,9 +133,11 @@ class FormUserDetail(FlaskForm):
     )
     language = SelectField(
         label="language",
-        validators=[Optional()
-            , Regexp( "^EN$", message="Choose EN or none, defaults to FR")
-            , Length(1, 30)],
+        validators=[
+            Optional(),
+            Regexp("^EN$", message="Choose EN or none, defaults to FR"),
+            Length(1, 30),
+        ],
         choices=[
             ("", "FR"),
             ("EN", "EN"),
@@ -144,11 +146,11 @@ class FormUserDetail(FlaskForm):
     )
     paymentMethod = SelectField(
         label="paymentMethod",
-        validators=[Optional()
-            , Regexp(
-                "^(VISA|MC)$", message="Choose VISA or MC or none"
-            )
-            , Length(1, 30)],
+        validators=[
+            Optional(),
+            Regexp("^(VISA|MC)$", message="Choose VISA or MC or none"),
+            Length(1, 30),
+        ],
         choices=[
             ("VISA", "VISA"),
             ("MC", "MC"),
@@ -244,9 +246,7 @@ def create_app(test_config=None):
     app.config["HTTP_USER"] = os.environ.get("HTTP_USER")
     app.config["HTTP_PASS"] = os.environ.get("HTTP_PASS")
 
-    app.wsgi_app = ProxyFix(
-        app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
-    )
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
     bootstrap = Bootstrap5(app)
 
     auth = HTTPBasicAuth()
@@ -383,7 +383,9 @@ def create_app(test_config=None):
             formUserDetail.homePhone.data = str(usersDict["HomePhone"])
             formUserDetail.accountNumber.data = str(usersDict["AccountNumber"])
             formUserDetail.language.process_data(str(usersDict["Language"]).strip())
-            formUserDetail.paymentMethod.process_data(str(usersDict["PaymentMethod"].strip()))
+            formUserDetail.paymentMethod.process_data(
+                str(usersDict["PaymentMethod"].strip())
+            )
             formUserDetail.creditCardNumber.data = str(usersDict["CreditCardNumber"])
             formUserDetail.creditCardExpiry.data = str(usersDict["CreditCardExpiry"])
             formUserDetail.bankName.data = str(usersDict["BankName"])
