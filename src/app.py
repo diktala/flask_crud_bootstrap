@@ -9,6 +9,7 @@ from wtforms.validators import InputRequired, Optional, Length, Regexp
 from wtforms.fields import *
 from flask_bootstrap import Bootstrap5, SwitchField
 from pymssql import _mssql
+from werkzeug.middleware.proxy_fix import ProxyFix
 from src.canadapost import getIDsFromIndex, getIndexFromPostal, getAddressFromID
 
 
@@ -230,6 +231,9 @@ def create_app(test_config=None):
     app.config["HTTP_USER"] = os.environ.get("HTTP_USER")
     app.config["HTTP_PASS"] = os.environ.get("HTTP_PASS")
 
+    app.wsgi_app = ProxyFix(
+        app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1
+    )
     bootstrap = Bootstrap5(app)
 
     auth = HTTPBasicAuth()
