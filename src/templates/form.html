@@ -3,9 +3,11 @@
 {% if isUserExist %}
     {%    set buttonStyle = "success" %}
     {%    set isValid     = "is-valid" %}
+    {%    set isDisabled     = "" %}
 {% else %}
     {%    set buttonStyle = "secondary" %}
     {%    set isValid     = "is-invalid" %}
+    {%    set isDisabled     = "disabled" %}
 {% endif %}
 {% block content %}
     <!-- form search users -->
@@ -25,7 +27,7 @@
     <!-- form update users -->
     <form id="UserInfoForm" action="" novalidate="" method="POST">
         <div class="row g-3">
-            <fieldset class="form-group border">
+            <fieldset class="form-group border" {{ isDisabled }}>
                 <legend>
                     User Info
                 </legend>
@@ -59,28 +61,4 @@
         </div>
     </form>
     <!-- end form update users -->
-    {#
-    <h2>Render a form with render_form</h2>
-    {{ render_form(form) }}
-
-    <h2>Custom buttons with button_map</h2>
-    <form method="post">
-    {{ form.csrf_token }}
-    {{ render_field(form.loginName) }}
-    {{ render_field(form.password) }}
-    {{ render_field(form.remember) }}
-    {{ render_field(form.submit) }}
-    </form>
-
-    <h2>Render a form with render_form_row</h2>
-    <form method="post">
-    {{ form.csrf_token }}
-    {{ render_form_row([form.loginName, form.password]) }}
-    {{ render_form_row([form.loginName, form.password], col_map={'loginName': 'col-md-6', 'password': 'col-md-4'}) }}
-    {{ render_form_row([form.loginName, form.password], col_map={'loginName': 'col-md-2', 'password': 'col-md-8'}) }}
-    {{ render_form_row([form.loginName, form.password], col_class_default='col-md-2') }}
-    {{ render_form_row([form.remember]) }}
-    {{ render_form_row([form.submit]) }}
-    </form>
-    #}
 {% endblock %}
