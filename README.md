@@ -16,11 +16,14 @@ pip install --upgrade pip
 
 pip install pymssql
 pip install bootstrap-flask
-pip install flask-sqlalchemy
+pip install Flask-HTTPAuth
+# pip install flask-sqlalchemy
 pip install flask-wtf
+pip install requests
 pip install black djlint
+pip install pytest
 
-python ./app.py
+flask --app app --debug run
 ```
 
 ---
