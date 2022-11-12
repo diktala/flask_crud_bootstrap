@@ -24,6 +24,8 @@ pip install black djlint
 pip install pytest
 
 flask --app app --debug run
+# or
+gunicorn -w 4 'app:app'
 ```
 
 ---

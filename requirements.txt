@@ -1,0 +1,9 @@
+black
+Bootstrap-Flask
+djlint
+Flask-HTTPAuth
+Flask-WTF
+gunicorn
+pymssql
+pytest
+requests
