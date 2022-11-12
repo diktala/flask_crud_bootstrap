@@ -16,8 +16,8 @@
                     Search Login
                 </legend>
                 {# {{ formSearchLogin.csrf_token }} #}
-                {{ render_field(formSearchLogin.loginName, form_type="horizontal", horizontal_columns=("sm",3,7), form_group_classes="mb-0", class=isValid ) }}
-                {{ render_field(formSearchLogin.submit, button_style=buttonStyle, form_group_classes="mb-0", class="offset-sm-3 col-sm-7") }}
+                {{ render_field(formSearchLogin.loginName, form_type="horizontal", horizontal_columns=("sm",3,7), form_group_classes="mb-1", class=isValid ) }}
+                {{ render_field(formSearchLogin.submit, button_style=buttonStyle, form_group_classes="mb-1", class="offset-sm-3 col-sm-7") }}
             </fieldset>
         </div>
     </form>
@@ -29,31 +29,31 @@
                 <legend>
                     User Info
                 </legend>
-                {{ render_form_row([formUserDetail.loginName], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.firstName], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.lastName], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.organizationName], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.address], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.city], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.state], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.postalCode, formUserDetail.lookupAddress, formUserDetail.addressSelect, formUserDetail.applyAddress], form_type="inline", col_map={'postalCode': 'offset-sm-2 col-sm-2', 'lookupAddress': 'col-sm-1', 'addressSelect': 'offset-sm-1 col-sm-4', 'applyAddress': 'col-sm-1'}, button_style="secondary", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.country], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.homePhone], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.accountNumber], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.language], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.paymentMethod], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.creditCardNumber], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.creditCardExpiry], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.bankName], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.checkNumber], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.bankAccount], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.identificationCard], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.authorizationCode], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.operatingSystem], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.operator], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.referredBy], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.notes], form_type="horizontal", form_group_classes="col-sm-12") }}
-                {{ render_form_row([formUserDetail.dateJoined], form_type="horizontal", form_group_classes="col-sm-12") }}
+                {{ render_form_row([formUserDetail.loginName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.firstName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.lastName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.organizationName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.address], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.city], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.state], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.postalCode, formUserDetail.lookupAddress, formUserDetail.addressSelect, formUserDetail.applyAddress], form_type="inline", col_map={'postalCode': 'offset-sm-2 col-sm-2', 'lookupAddress': 'col-sm-1', 'addressSelect': 'offset-sm-1 col-sm-4', 'applyAddress': 'col-sm-1'}, button_style="secondary", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.country], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.homePhone], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.accountNumber], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.language], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.paymentMethod], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.creditCardNumber], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.creditCardExpiry], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.bankName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.checkNumber], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.bankAccount], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.identificationCard], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.authorizationCode], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.operatingSystem], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.operator], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.referredBy], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.notes], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.dateJoined], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
                 {{ render_form_row([formUserDetail.updateUser], form_type="horizontal", horizontal_columns=("sm", 0, 2), button_style="secondary" ) }}
             </fieldset>
         </div>
