@@ -425,12 +425,6 @@ def create_app(test_config=None):
                 db.session.commit()
                 """
                 flash('LoginName="' + formUserDetail.data["loginName"] + '"', "success")
-                # return redirect(url_for('test_form'))
-                return render_template(
-                    "form.html",
-                    formSearchLogin=formSearchLogin,
-                    formUserDetail=formUserDetail,
-                )
             except:
                 # db.session.rollback()
                 flash("Error: could not save.", "danger")
