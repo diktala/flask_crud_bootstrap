@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import os
 import re
+from datetime import datetime as dt
 from flask import Flask, render_template, request, flash, Markup, redirect, url_for
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm, CSRFProtect
-from wtforms.validators import InputRequired, Optional, Length, Regexp
+from wtforms.validators import InputRequired, Optional, Length, Regexp, ValidationError
 from wtforms.fields import *
 from flask_bootstrap import Bootstrap5, SwitchField
 from pymssql import _mssql
@@ -166,10 +167,14 @@ class FormUserDetail(FlaskForm):
     )
     creditCardExpiry = StringField(
         label="creditCardExpiry",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional(), Length(6, 6), Regexp("^[0-9]+$", message="YYYYMM ex: 203011")],
         description="",
         render_kw={"placeholder": "creditCardExpiry"},
     )
+    def validate_creditCardExpiry(form, field):
+        if int(field.data) < 20221100:
+            raise ValidationError("CC Exp is expired")
+
     bankName = StringField(
         label="bankName",
         validators=[InputRequired(), Length(1, 30)],
@@ -226,7 +231,7 @@ class FormUserDetail(FlaskForm):
     )
     dateJoined = StringField(
         label="dateJoined",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional(), Length(1, 30)],
         description="",
         render_kw={"placeholder": "dateJoined"},
     )
@@ -387,7 +392,8 @@ def create_app(test_config=None):
                 str(usersDict["PaymentMethod"].strip())
             )
             formUserDetail.creditCardNumber.data = str(usersDict["CreditCardNumber"])
-            formUserDetail.creditCardExpiry.data = str(usersDict["CreditCardExpiry"])
+            CCExp=dt.strptime(str(usersDict["CreditCardExpiry"]),'%Y-%m-%d %H:%M:%S')
+            formUserDetail.creditCardExpiry.data = CCExp.strftime('%Y%m')
             formUserDetail.bankName.data = str(usersDict["BankName"])
             formUserDetail.checkNumber.data = str(usersDict["CheckNumber"])
             formUserDetail.bankAccount.data = str(usersDict["BankAccount"])
@@ -399,7 +405,7 @@ def create_app(test_config=None):
             formUserDetail.operator.data = str(usersDict["Operator"])
             formUserDetail.referredBy.data = str(usersDict["ReferredBy"])
             formUserDetail.notes.data = str(usersDict["Notes"])
-            formUserDetail.dateJoined.data = str(usersDict["DateJoined"])
+            # formUserDetail.dateJoined.data = str(usersDict["DateJoined"])
 
         if (
             request.method == "POST"
