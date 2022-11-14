@@ -34,7 +34,7 @@ class FormSearchLogin(FlaskForm):
         validators=[
             InputRequired(),
             Regexp(
-                "^[a-z_.-]+$", flags=re.IGNORECASE, message="incorrect characters used"
+                "^[a-z0-9][a-z0-9.-]*$", flags=re.IGNORECASE, message="incorrect characters used"
             ),
             Length(1, 20),
         ],
@@ -47,33 +47,21 @@ class FormSearchLogin(FlaskForm):
 class FormUserDetail(FlaskForm):
     loginName = StringField(
         label="Login name",
-        validators=[InputRequired(), Length(1, 20)],
+        validators=[InputRequired(), Length(1, 20), Regexp("^[a-z0-9][a-z0-9.-]*$",message="incorrect characters used")],
         description="",
         render_kw={"placeholder": "Customer username"},
     )
     firstName = StringField(
         label="First name",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[InputRequired(), Length(1, 30), Regexp("^[\w. &'-]*[\w]$",message="incorrect characters used")],
         description="",
         render_kw={"placeholder": "Customer first name"},
     )
     lastName = StringField(
         label="Last name",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[InputRequired(), Length(1, 30), Regexp("^[\w. &'-]*[\w]$",message="incorrect characters used")],
         description="",
         render_kw={"placeholder": "Customer last name"},
-    )
-    firstName = StringField(
-        label="firstName",
-        validators=[InputRequired(), Length(1, 30)],
-        description="",
-        render_kw={"placeholder": "firstName"},
-    )
-    lastName = StringField(
-        label="lastName",
-        validators=[InputRequired(), Length(1, 30)],
-        description="",
-        render_kw={"placeholder": "lastName"},
     )
     organizationName = StringField(
         label="organizationName",
@@ -172,7 +160,7 @@ class FormUserDetail(FlaskForm):
         render_kw={"placeholder": "creditCardExpiry"},
     )
     def validate_creditCardExpiry(form, field):
-        if int(field.data) < 20221100:
+        if int(field.data) < 202211:
             raise ValidationError("CC Exp is expired")
 
     bankName = StringField(
@@ -306,6 +294,15 @@ def create_app(test_config=None):
             )
         return isUserExist
 
+    def _sanitizeCreditCardExpiry(ccExp=''):
+        output = ''
+        try:
+            expirationDate = dt.strptime(ccExp, '%Y-%m-%d %H:%M:%S')
+            output = expirationDate.strftime('%Y%m')
+        except:
+            pass
+        return output
+
     @auth.verify_password
     def verify_password(username, password):
         if authorizedUsers is None:
@@ -336,7 +333,6 @@ def create_app(test_config=None):
             and formSearchLogin.validate()
             and isUserExist(formSearchLogin.data["loginName"]) == 1
         ):
-            flash("Debug: indicating location AAA ....", "warning")
             usersDict = queryDBrow(
                 """SELECT
                   FirstName,
@@ -370,11 +366,6 @@ def create_app(test_config=None):
                 """,
                 formSearchLogin.data["loginName"],
             )
-            """
-            userInfoModel = DB_UserId()
-            userInfoModel.loginName = formSearchLogin.data["loginName"]
-            formUserDetail = FormUserDetail(obj=userInfoModel)
-            """
             formUserDetail = FormUserDetail()
             formUserDetail.loginName.data = str(formSearchLogin.data["loginName"])
             formUserDetail.firstName.data = str(usersDict["FirstName"])
@@ -392,8 +383,7 @@ def create_app(test_config=None):
                 str(usersDict["PaymentMethod"].strip())
             )
             formUserDetail.creditCardNumber.data = str(usersDict["CreditCardNumber"])
-            CCExp=dt.strptime(str(usersDict["CreditCardExpiry"]),'%Y-%m-%d %H:%M:%S')
-            formUserDetail.creditCardExpiry.data = CCExp.strftime('%Y%m')
+            formUserDetail.creditCardExpiry.data = _sanitizeCreditCardExpiry(str(usersDict["CreditCardExpiry"]))
             formUserDetail.bankName.data = str(usersDict["BankName"])
             formUserDetail.checkNumber.data = str(usersDict["CheckNumber"])
             formUserDetail.bankAccount.data = str(usersDict["BankAccount"])
@@ -427,8 +417,6 @@ def create_app(test_config=None):
             and formUserDetail.applyAddress.data
             and formUserDetail.addressSelect.data
         ):
-            flash("Debug: indicating location 'applyAddress' ....", "warning")
-            flash(f"Debug: {formUserDetail.addressSelect.data}", "warning")
             postalAddress = getAddressFromID(formUserDetail.addressSelect.data)
             if len(postalAddress) >= 5:
                 formUserDetail.address.data = postalAddress["Line1"]
