@@ -49,49 +49,49 @@ class FormUserDetail(FlaskForm):
         label="Login name",
         validators=[InputRequired(), Length(1, 20), Regexp("^[a-z0-9][a-z0-9.-]*$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "Customer username"},
+        render_kw={"placeholder": ""},
     )
     firstName = StringField(
         label="First name",
         validators=[InputRequired(), Length(1, 30), Regexp("^[\w. &'-]*[\w]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "Customer first name"},
+        render_kw={"placeholder": ""},
     )
     lastName = StringField(
         label="Last name",
         validators=[InputRequired(), Length(1, 30), Regexp("^[\w. &'-]*[\w]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "Customer last name"},
+        render_kw={"placeholder": ""},
     )
     organizationName = StringField(
         label="organizationName",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional(), Length(1, 30), Regexp("^[\w. &'-]*[\w.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "organizationName"},
+        render_kw={"placeholder": ""},
     )
     address = StringField(
         label="address",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[InputRequired(), Length(1, 30), Regexp("^[\w. &/'-]*[\w.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "address"},
+        render_kw={"placeholder": ""},
     )
     city = StringField(
         label="city",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[InputRequired(), Length(1, 30), Regexp("^[\w. &'-]*[\w.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "city"},
+        render_kw={"placeholder": ""},
     )
     state = StringField(
         label="state",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[InputRequired(), Length(1, 30), Regexp("^[\w. &'-]*[\w.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "state"},
+        render_kw={"placeholder": ""},
     )
     postalCode = StringField(
         label="postalCode",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[InputRequired(), Length(1, 30), Regexp("^[A-Z][0-9][A-Z] [0-9][A-Z][0-9]$",message="must use a canadian postal code H1H 1H1")],
         description="",
-        render_kw={"placeholder": "postalCode"},
+        render_kw={"placeholder": ""},
     )
     lookupAddress = SubmitField(label="Lookup")
     addressSelect = SelectField(
@@ -104,21 +104,21 @@ class FormUserDetail(FlaskForm):
     applyAddress = SubmitField(label="Apply")
     country = StringField(
         label="country",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[InputRequired(), Length(1, 30), Regexp("^[\w. &'-]*[\w.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "country"},
+        render_kw={"placeholder": ""},
     )
     homePhone = StringField(
         label="homePhone",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[InputRequired(), Length(1, 30), Regexp("^[0-9]{3} [0-9]{3} [0-9]{4}$",message="must use format 514 555 1212")],
         description="",
-        render_kw={"placeholder": "homePhone"},
+        render_kw={"placeholder": ""},
     )
     accountNumber = StringField(
         label="accountNumber",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[InputRequired(), Length(1, 30), Regexp("^[0-9]{9}$",message="must be 9-digit ex. 800-555-1234 becomes 855512341")],
         description="",
-        render_kw={"placeholder": "accountNumber"},
+        render_kw={"placeholder": ""},
     )
     language = SelectField(
         label="language",
@@ -149,15 +149,15 @@ class FormUserDetail(FlaskForm):
     )
     creditCardNumber = StringField(
         label="creditCardNumber",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional(), Length(1, 30), Regexp("^[0-9 ]{16,19}$",message="be empty or a credit card number 4111111111111111")],
         description="",
-        render_kw={"placeholder": "creditCardNumber"},
+        render_kw={"placeholder": ""},
     )
     creditCardExpiry = StringField(
         label="creditCardExpiry",
         validators=[Optional(), Length(6, 6), Regexp("^[0-9]+$", message="YYYYMM ex: 203011")],
         description="",
-        render_kw={"placeholder": "creditCardExpiry"},
+        render_kw={"placeholder": ""},
     )
     def validate_creditCardExpiry(form, field):
         if int(field.data) < 202211:
@@ -165,63 +165,57 @@ class FormUserDetail(FlaskForm):
 
     bankName = StringField(
         label="bankName",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional(), Length(1, 30), Regexp("^[\w. &/'-]*[\w.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "bankName"},
+        render_kw={"placeholder": ""},
     )
     checkNumber = StringField(
         label="checkNumber",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional(), Length(1, 30), Regexp("^[\w. &/'-]*[\w.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "checkNumber"},
+        render_kw={"placeholder": ""},
     )
     bankAccount = StringField(
         label="bankAccount",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional(), Length(1, 30), Regexp("^[\w. &/'-]*[\w.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "bankAccount"},
+        render_kw={"placeholder": ""},
     )
     identificationCard = StringField(
         label="identificationCard",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional(), Length(1, 30), Regexp("^[\w. &/'#:-]*[\w.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "identificationCard"},
+        render_kw={"placeholder": ""},
     )
     authorizationCode = StringField(
         label="authorizationCode",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional(), Length(1, 30), Regexp("^[\w. &/'#:-]*[\w.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "authorizationCode"},
+        render_kw={"placeholder": ""},
     )
     operatingSystem = StringField(
         label="operatingSystem",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional(), Length(1, 10), Regexp("^[\w. &/'#:-]*[\w.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "operatingSystem"},
+        render_kw={"placeholder": ""},
     )
     operator = StringField(
         label="operator",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional(), Length(1, 30), Regexp("^[\w. &/'#:-]*[\w.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "operator"},
+        render_kw={"placeholder": ""},
     )
     referredBy = StringField(
         label="referredBy",
-        validators=[InputRequired(), Length(1, 30)],
+        validators=[Optional(), Length(1, 30), Regexp("^[\w. &/'#:-]*[\w:.]$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "referredBy"},
+        render_kw={"placeholder": ""},
     )
     notes = StringField(
         label="notes",
-        validators=[InputRequired(), Length(1, 250)],
+        validators=[InputRequired(), Length(1, 250), Regexp("^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$",message="incorrect characters used")],
         description="",
-        render_kw={"placeholder": "notes"},
-    )
-    dateJoined = StringField(
-        label="dateJoined",
-        validators=[Optional(), Length(1, 30)],
-        description="",
-        render_kw={"placeholder": "dateJoined"},
+        render_kw={"placeholder": ""},
     )
     updateUser = SubmitField(label="Update")
 
@@ -268,7 +262,7 @@ def create_app(test_config=None):
     def queryDBrow(query, params=""):
         dbLink.execute_query(query, params)
         queryResult = {}
-        # check dbLink is iterable i.e. not using fake_mssql
+        # trick to differentiate pymssql vs fake_mssql
         if hasattr(dbLink, "__iter__"):
             for row in dbLink:
                 for column in row.keys():
@@ -367,35 +361,34 @@ def create_app(test_config=None):
                 formSearchLogin.data["loginName"],
             )
             formUserDetail = FormUserDetail()
-            formUserDetail.loginName.data = str(formSearchLogin.data["loginName"])
-            formUserDetail.firstName.data = str(usersDict["FirstName"])
-            formUserDetail.lastName.data = str(usersDict["LastName"])
-            formUserDetail.organizationName.data = str(usersDict["OrganizationName"])
-            formUserDetail.address.data = str(usersDict["Address"])
-            formUserDetail.city.data = str(usersDict["City"])
-            formUserDetail.state.data = str(usersDict["State"])
-            formUserDetail.postalCode.data = str(usersDict["PostalCode"])
-            formUserDetail.country.data = str(usersDict["Country"])
-            formUserDetail.homePhone.data = str(usersDict["HomePhone"])
-            formUserDetail.accountNumber.data = str(usersDict["AccountNumber"])
+            formUserDetail.loginName.data = str(formSearchLogin.data["loginName"] or '')
+            formUserDetail.firstName.data = str(usersDict["FirstName"] or '')
+            formUserDetail.lastName.data = str(usersDict["LastName"] or '')
+            formUserDetail.organizationName.data = str(usersDict["OrganizationName"] or '')
+            formUserDetail.address.data = str(usersDict["Address"] or '')
+            formUserDetail.city.data = str(usersDict["City"] or '')
+            formUserDetail.state.data = str(usersDict["State"] or '')
+            formUserDetail.postalCode.data = str(usersDict["PostalCode"] or '')
+            formUserDetail.country.data = str(usersDict["Country"] or '')
+            formUserDetail.homePhone.data = str(usersDict["HomePhone"] or '')
+            formUserDetail.accountNumber.data = str(usersDict["AccountNumber"] or '')
             formUserDetail.language.process_data(str(usersDict["Language"]).strip())
             formUserDetail.paymentMethod.process_data(
                 str(usersDict["PaymentMethod"].strip())
             )
-            formUserDetail.creditCardNumber.data = str(usersDict["CreditCardNumber"])
-            formUserDetail.creditCardExpiry.data = _sanitizeCreditCardExpiry(str(usersDict["CreditCardExpiry"]))
-            formUserDetail.bankName.data = str(usersDict["BankName"])
-            formUserDetail.checkNumber.data = str(usersDict["CheckNumber"])
-            formUserDetail.bankAccount.data = str(usersDict["BankAccount"])
+            formUserDetail.creditCardNumber.data = str(usersDict["CreditCardNumber"] or '')
+            formUserDetail.creditCardExpiry.data = _sanitizeCreditCardExpiry(str(usersDict["CreditCardExpiry"] or ''))
+            formUserDetail.bankName.data = str(usersDict["BankName"] or '')
+            formUserDetail.checkNumber.data = str(usersDict["CheckNumber"] or '')
+            formUserDetail.bankAccount.data = str(usersDict["BankAccount"] or '')
             formUserDetail.identificationCard.data = str(
-                usersDict["IdentificationCard"]
+                usersDict["IdentificationCard"] or ''
             )
-            formUserDetail.authorizationCode.data = str(usersDict["AuthorizationCode"])
-            formUserDetail.operatingSystem.data = str(usersDict["OperatingSystem"])
-            formUserDetail.operator.data = str(usersDict["Operator"])
-            formUserDetail.referredBy.data = str(usersDict["ReferredBy"])
-            formUserDetail.notes.data = str(usersDict["Notes"])
-            # formUserDetail.dateJoined.data = str(usersDict["DateJoined"])
+            formUserDetail.authorizationCode.data = str(usersDict["AuthorizationCode"] or '')
+            formUserDetail.operatingSystem.data = str(usersDict["OperatingSystem"] or '')
+            formUserDetail.operator.data = str(usersDict["Operator"] or '')
+            formUserDetail.referredBy.data = str(usersDict["ReferredBy"] or '')
+            formUserDetail.notes.data = str(usersDict["Notes"] or '')
 
         if (
             request.method == "POST"
@@ -452,6 +445,3 @@ def create_app(test_config=None):
 
     return app
 
-
-# if __name__ == "__main__":
-#    app.run(debug=True)

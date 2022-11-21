@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import re
+import json
 from pprint import pprint
 from datetime import datetime as dt
 from pymssql import _mssql
@@ -30,9 +31,10 @@ def queryDBall(query, params=""):
     dbLink.close
     return allRows
 
-# myResult = queryDBall("SELECT FirstName, LoginName FROM UsersId WHERE LoginName like 'tria%'")
-myResult = queryDBall("SELECT LastName, LoginName FROM UsersId")
-
-pprint(myResult)
+# myResult = queryDBall("SELECT OperatingSystem, LoginName FROM UsersId WHERE LoginName like 'tria%'")
+myResult = queryDBall("SELECT DateJoined, LoginName FROM UsersId")
+myResultJson = json.dumps(myResult, indent = 4)
+print (myResultJson)
+# pprint(myResult)
 
 
