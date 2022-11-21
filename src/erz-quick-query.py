@@ -31,10 +31,11 @@ def queryDBall(query, params=""):
     dbLink.close
     return allRows
 
-# myResult = queryDBall("SELECT OperatingSystem, LoginName FROM UsersId WHERE LoginName like 'tria%'")
-myResult = queryDBall("SELECT DateJoined, LoginName FROM UsersId")
+myResult = queryDBall('SELECT convert(varchar,DateJoined,102) as "DateJoined", LoginName FROM UsersId')
 myResultJson = json.dumps(myResult, indent = 4)
 print (myResultJson)
 # pprint(myResult)
-
+# ex: python src/erz-quick-query.py > temp-file.txt
+#     cat temp-file.txt | jq '.'
+#     cat temp-file.txt| jq -C '. | [.[]] | .[] | ."ReferredBy" '
 
