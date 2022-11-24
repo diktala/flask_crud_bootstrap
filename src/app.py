@@ -29,6 +29,8 @@ class fake_mssql:
 
 
 class FormSearchLogin(FlaskForm):
+    class Meta:
+        csrf = False
     loginName = StringField(
         label="Login name",
         validators=[
@@ -116,7 +118,7 @@ class FormUserDetail(FlaskForm):
     )
     accountNumber = StringField(
         label="accountNumber",
-        validators=[InputRequired(), Length(1, 30), Regexp("^[0-9]{9}$",message="must be 9-digit ex. 800-555-1234 becomes 855512341")],
+        validators=[InputRequired(), Length(1, 30), Regexp("^[0-9]{1,9}$",message="must be 9-digit ex. 800-555-1234 becomes 855512341")],
         description="",
         render_kw={"placeholder": ""},
     )
@@ -217,6 +219,12 @@ class FormUserDetail(FlaskForm):
         description="",
         render_kw={"placeholder": ""},
     )
+    dateJoined = HiddenField(
+        label="dateJoined",
+        validators=[Optional(), Length(1, 30), Regexp("^[0-9]{4}-[0-9]{2}-[0-9]{2} 00:00:00$",message="incorrect characters used 2000-01-01")],
+        description="",
+        render_kw={"placeholder": ""},
+    )
     updateUser = SubmitField(label="Update")
 
 
@@ -225,7 +233,7 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY="dev",
         BOOTSTRAP_SERVE_LOCAL=True,
-        WTF_CSRF_ENABLED=False,
+        WTF_CSRF_ENABLED=True,
     )
     app.config["DB_IP"] = os.environ.get("DB_IP")
     app.config["DB_USER"] = os.environ.get("DB_USER")
@@ -389,6 +397,7 @@ def create_app(test_config=None):
             formUserDetail.operator.data = str(usersDict["Operator"] or '')
             formUserDetail.referredBy.data = str(usersDict["ReferredBy"] or '')
             formUserDetail.notes.data = str(usersDict["Notes"] or '')
+            formUserDetail.dateJoined.data = str(usersDict["DateJoined"] or '')
 
         if (
             request.method == "POST"
@@ -424,14 +433,45 @@ def create_app(test_config=None):
             and formUserDetail.updateUser.data
             and formUserDetail.validate_on_submit()
         ):
-            flash("Debug: indicating location 'updateUser' ....", "warning")
             try:
-                """
-                formUserDetail.populate_obj(userInfoModel)
-                db.session.add(userInfoModel)
-                db.session.commit()
-                """
-                flash('LoginName="' + formUserDetail.data["loginName"] + '"', "success")
+                updateAladinSQL1 = F"""
+                    EXECUTE UpdateUserFile
+                          %s, %s, %s, %s, %s, %s ...
+                    """
+                updateAladinParam1 = F"""
+                        {formUserDetail.data["loginName"]}
+                        , {formUserDetail.data["firstName"]}
+                        , {formUserDetail.data["lastName"]}
+                        , {formUserDetail.data["organizationName"]}
+                        , {formUserDetail.data["address"]}
+                        , {formUserDetail.data["city"]}
+                        , {formUserDetail.data["state"]}
+                        , {formUserDetail.data["postalCode"]}
+                        , {formUserDetail.data["country"]}
+                        , {formUserDetail.data["homePhone"]}
+                        , {formUserDetail.data["operatingSystem"]}
+                        , {formUserDetail.data["accountNumber"]}
+                        , {formUserDetail.data["paymentMethod"]}
+                        ,
+                        , {formUserDetail.data["creditCardExpiry"]}
+                        , {formUserDetail.data["creditCardNumber"]}
+                        , {formUserDetail.data["notes"]}
+                        , {formUserDetail.data["dateJoined"]}
+                        ,
+                        ,
+                        , {formUserDetail.data["referredBy"]}
+                        ,
+                        ,
+                        ,
+                        ,
+                        ,
+                        , {formUserDetail.data["language"]}
+                        , 1
+                        , {formUserDetail.data["operator"]}
+                    """
+                updateAladinSQL2 = "EXECUTE second query"
+                flash(updateAladinSQL1 + " " + updateAladinParam1 + ';', "success")
+                flash(updateAladinSQL2 + ';', "success")
             except:
                 # db.session.rollback()
                 flash("Error: could not save.", "danger")
