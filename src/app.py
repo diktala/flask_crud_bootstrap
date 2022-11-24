@@ -116,7 +116,7 @@ class FormUserDetail(FlaskForm):
     )
     accountNumber = StringField(
         label="accountNumber",
-        validators=[InputRequired(), Length(1, 30), Regexp("^[0-9]{9}$",message="must be 9-digit ex. 800-555-1234 becomes 855512341")],
+        validators=[InputRequired(), Length(1, 30), Regexp("^[0-9]{1,9}$",message="must be 9-digit ex. 800-555-1234 becomes 855512341")],
         description="",
         render_kw={"placeholder": ""},
     )
@@ -424,14 +424,45 @@ def create_app(test_config=None):
             and formUserDetail.updateUser.data
             and formUserDetail.validate_on_submit()
         ):
-            flash("Debug: indicating location 'updateUser' ....", "warning")
             try:
-                """
-                formUserDetail.populate_obj(userInfoModel)
-                db.session.add(userInfoModel)
-                db.session.commit()
-                """
-                flash('LoginName="' + formUserDetail.data["loginName"] + '"', "success")
+                updateAladinSQL1 = F"""
+                    EXECUTE UpdateUserFile
+                          %s, %s, %s, %s, %s, %s ...
+                    """
+                updateAladinParam1 = F"""
+                        {formUserDetail.data["loginName"]}
+                        , {formUserDetail.data["firstName"]}
+                        , {formUserDetail.data["lastName"]}
+                        , {formUserDetail.data["organizationName"]}
+                        , {formUserDetail.data["address"]}
+                        , {formUserDetail.data["city"]}
+                        , {formUserDetail.data["state"]}
+                        , {formUserDetail.data["postalCode"]}
+                        , {formUserDetail.data["country"]}
+                        , {formUserDetail.data["homePhone"]}
+                        , {formUserDetail.data["operatingSystem"]}
+                        , {formUserDetail.data["accountNumber"]}
+                        , {formUserDetail.data["paymentMethod"]}
+                        , "membership"
+                        , {formUserDetail.data["creditCardExpiry"]}
+                        , {formUserDetail.data["creditCardNumber"]}
+                        , {formUserDetail.data["notes"]}
+                        , "dateJoined"
+                        ,
+                        ,
+                        , {formUserDetail.data["referredBy"]}
+                        ,
+                        ,
+                        ,
+                        ,
+                        ,
+                        , {formUserDetail.data["language"]}
+                        , 1
+                        , {formUserDetail.data["operator"]}
+                    """
+                updateAladinSQL2 = "EXECUTE second query"
+                flash(updateAladinSQL1 + " " + updateAladinParam1 + ';', "success")
+                flash(updateAladinSQL2 + ';', "success")
             except:
                 # db.session.rollback()
                 flash("Error: could not save.", "danger")
