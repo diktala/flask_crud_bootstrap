@@ -64,7 +64,7 @@ payload = {
 def _sanitizeString(stringToCheck=''):
     stringReturned = ''
     if (isinstance(stringToCheck, str)
-        and len(stringToCheck) < 30
+        and len(stringToCheck) < 60
         and re.match('^[a-zA-Z0-9 _|-]*$', stringToCheck)
        ):
         stringReturned = stringToCheck
@@ -73,6 +73,7 @@ def _sanitizeString(stringToCheck=''):
 def getIndexFromPostal(searchTerm='H0H 0H0'):
     searchTerm = _sanitizeString(searchTerm)
     payload['SearchTerm'] = searchTerm
+    payload['LastId'] = ''
     url = 'https://ws1.postescanada-canadapost.ca'
     url += '/AddressComplete/Interactive/Find/v2.10/json3ex.ws'
     indexID = ''
@@ -87,6 +88,7 @@ def getIndexFromPostal(searchTerm='H0H 0H0'):
 
 def getIDsFromIndex(Index=''):
     Index = _sanitizeString(Index)
+    payload['SearchTerm'] = ''
     payload['LastId'] = Index
     url = 'https://ws1.postescanada-canadapost.ca'
     url += '/AddressComplete/Interactive/Find/v2.10/json3ex.ws'
