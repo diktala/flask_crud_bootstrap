@@ -211,12 +211,17 @@ class FormUserDetail(FlaskForm):
             Length(1, 30),
             Regexp(
                 "^[0-9 ]{16,19}$",
-                message="be empty or a credit card number 4111111111111111",
+                message="must be empty or a credit card number 4111111111111111",
             ),
         ],
         description="",
         render_kw={"placeholder": ""},
     )
+
+    def validate_creditCardNumber(form, field):
+        if not form.creditCardExpiry.data:
+            raise ValidationError("missing credit card expiration date")
+
     creditCardExpiry = StringField(
         label="creditCardExpiry",
         validators=[
@@ -241,7 +246,9 @@ class FormUserDetail(FlaskForm):
                 pass
             return output
         if field.data and not _isDateValid(field.data):
-            raise ValidationError("CC Exp is expired")
+            raise ValidationError("CC Exp is invalid or expired")
+        if not form.creditCardNumber.data:
+            raise ValidationError("missing credit cardnumber")
 
     bankName = StringField(
         label="bankName",
