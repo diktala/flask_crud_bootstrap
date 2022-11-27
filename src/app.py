@@ -452,11 +452,19 @@ def create_app(test_config=None):
                         , {formUserDetail.data["operatingSystem"]}
                         , {formUserDetail.data["accountNumber"]}
                         , {formUserDetail.data["paymentMethod"]}
+<<<<<<< HEAD
                         ,
                         , {formUserDetail.data["creditCardExpiry"]}
                         , {formUserDetail.data["creditCardNumber"]}
                         , {formUserDetail.data["notes"]}
                         , {formUserDetail.data["dateJoined"]}
+=======
+                        , "membership"
+                        , {formUserDetail.data["creditCardExpiry"]}
+                        , {formUserDetail.data["creditCardNumber"]}
+                        , {formUserDetail.data["notes"]}
+                        , "dateJoined"
+>>>>>>> aaa21b91dc6040aed00fb81115da8de69de2eb63
                         ,
                         ,
                         , {formUserDetail.data["referredBy"]}
