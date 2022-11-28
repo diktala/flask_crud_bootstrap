@@ -70,7 +70,7 @@ class FormSearchLogin(FlaskForm):
 
 
 class FormUserDetail(FlaskForm):
-    loginName = StringField(
+    loginName = HiddenField(
         label="Login name",
         validators=[
             InputRequired(),
@@ -481,9 +481,11 @@ def create_app(test_config=None):
         formSearchLogin = FormSearchLogin(request.args)
         formUserDetail = FormUserDetail()
 
+        """ URL contains ?LoginName=someuser """
         if request.method == "GET" and request.args.get("LoginName") is not None:
             formSearchLogin.loginName.data = request.args.get("LoginName")
 
+        """ Button Pressed SEARCH Login """
         if (
             request.method == "GET"
             and "loginName" in request.args
@@ -564,12 +566,12 @@ def create_app(test_config=None):
             formUserDetail.notes.data = str(usersDict["Notes"] or "")
             formUserDetail.dateJoined.data = str(usersDict["DateJoined"] or "")
 
+        """ Button Pressed LOOKUP postal code """
         if (
             request.method == "POST"
             and formUserDetail.lookupAddress.data
             and formUserDetail.postalCode.data
         ):
-            flash("Debug: indicating location 'lookupAddress' ....", "warning")
             indexID = getIndexFromPostal(formUserDetail.postalCode.data)
             listOfAddresses = getIDsFromIndex(indexID)
             myChoices = [
@@ -578,6 +580,7 @@ def create_app(test_config=None):
             myChoices += [(k, v) for k, v in listOfAddresses.items()]
             formUserDetail.addressSelect.choices = myChoices
 
+        """ Button Pressed APPLY postal code """
         if (
             request.method == "POST"
             and formUserDetail.applyAddress.data
@@ -592,6 +595,7 @@ def create_app(test_config=None):
                 formUserDetail.postalCode.data = postalAddress["PostalCode"]
                 flash(f"address applied: {formUserDetail.address.data}", "primary")
 
+        """ Button Pressed UPDATE Userinfo """
         if (
             request.method == "POST"
             and formUserDetail.updateUser.data
@@ -682,12 +686,13 @@ def create_app(test_config=None):
                 flash(updateAladinParam1, "success")
                 flash(updateAladinSQL2, "success")
                 flash(updateAladinParam2, "success")
+                # disable form after update completed
+                formSearchLogin.loginName.data = ''
             except:
-                # db.session.rollback()
                 flash("Error: could not save.", "danger")
 
         return render_template(
-            "form.html",
+            "updateuser.html",
             formSearchLogin=formSearchLogin,
             formUserDetail=formUserDetail,
             isUserExist=isUserExist(formSearchLogin.data["loginName"]),
