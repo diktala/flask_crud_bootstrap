@@ -253,9 +253,8 @@ class FormUserDetail(FlaskForm):
         render_kw={"placeholder": ""},
     )
 
- 
     def validate_creditCardExpiry(form, field):
-        def _isDateValid(stringDate=''):
+        def _isDateValid(stringDate=""):
             output = False
             try:
                 myDate = dt.strptime(stringDate, "%Y-%m-%d")
@@ -265,6 +264,7 @@ class FormUserDetail(FlaskForm):
             except:
                 pass
             return output
+
         if field.data and not _isDateValid(field.data):
             raise ValidationError("CC Exp is invalid or expired")
         if not form.creditCardNumber.data:
@@ -449,7 +449,7 @@ def create_app(test_config=None):
     def _sanitizeCreditCardExpiry(ccExp=""):
         output = ""
         try:
-            ccExpTrimmed = re.sub(r'^([0-9]+-[0-9]+-[0-9]+)( .*)', r'\1', ccExp)
+            ccExpTrimmed = re.sub(r"^([0-9]+-[0-9]+-[0-9]+)( .*)", r"\1", ccExp)
             expirationDate = dt.strptime(ccExpTrimmed, "%Y-%m-%d")
             #
             # get close to the end of month and add 4 days over
@@ -634,7 +634,9 @@ def create_app(test_config=None):
                     , @DebugLevel = %d
                     , @Operator = %s
                     """
-                creditCardExpiry = _sanitizeCreditCardExpiry(formUserDetail.data["creditCardExpiry"])
+                creditCardExpiry = _sanitizeCreditCardExpiry(
+                    formUserDetail.data["creditCardExpiry"]
+                )
                 updateAladinParam1 = f"""
                         {formUserDetail.data["loginName"]}
                         , {formUserDetail.data["firstName"]}
@@ -687,7 +689,7 @@ def create_app(test_config=None):
                 flash(updateAladinSQL2, "success")
                 flash(updateAladinParam2, "success")
                 # disable form after update completed
-                formSearchLogin.loginName.data = ''
+                formSearchLogin.loginName.data = ""
             except:
                 flash("Error: could not save.", "danger")
 
