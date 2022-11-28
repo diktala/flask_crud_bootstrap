@@ -1,4 +1,24 @@
 # -*- coding: utf-8 -*-
+"""Updateuser on Aladin mssql
+
+This flask page uses Flask and WTF and pymssql to update Aladin
+It requires exported variables:
+'DB_IP'       ip-address-of-aladin-mssql-db
+'DB_USER'     username on Aladin
+'DB_PASS'     password to access Aladin
+'HTTP_USER'   username for http authentication
+'HTTP_PASS'   password for http authentication
+'API_KEY1'    API1 for post address find
+'API_KEY2'    API2 for post address retrieve
+'API_REFERER' referrer URL for post address APIs
+
+Example:
+    python
+    [...]
+
+Attributes:
+    [...]
+"""
 import os
 import re
 from datetime import timedelta, datetime as dt
@@ -348,7 +368,7 @@ class FormUserDetail(FlaskForm):
             Optional(),
             Length(1, 30),
             Regexp(
-                "^[0-9]{4}-[0-9]{2}-[0-9]{2} 00:00:00$",
+                "^[0-9]{4}-[0-9]{2}-[0-9]{2}( 00:00:00)?$",
                 message="incorrect characters used 2000-01-01",
             ),
         ],
@@ -455,9 +475,9 @@ def create_app(test_config=None):
     def index():
         return render_template("index.html")
 
-    @app.route("/form", methods=["GET", "POST"])
+    @app.route("/updateuser", methods=["GET", "POST"])
     @auth.login_required
-    def test_form():
+    def updateuser_form():
         formSearchLogin = FormSearchLogin(request.args)
         formUserDetail = FormUserDetail()
 
@@ -495,7 +515,7 @@ def create_app(test_config=None):
                   Operator,
                   ReferredBy,
                   Notes,
-                  DateJoined
+                  replace(convert(varchar,DateJoined,102),'.','-') as "DateJoined"
                 FROM
                   UsersId
                 WHERE
@@ -579,8 +599,36 @@ def create_app(test_config=None):
         ):
             try:
                 updateAladinSQL1 = f"""
-                    EXECUTE UpdateUserFile
-                          %s, %s, %s, %s, %s, %s ...
+                EXECUTE UpdateUserFile
+                    @LoginName = %s
+                    , @FirstName = %s
+                    , @LastName = %s
+                    , @OrganizationName = %s
+                    , @Address = %s
+                    , @City = %s
+                    , @State = %s
+                    , @PostalCode = %s
+                    , @Country = %s
+                    , @HomePhone = %s
+                    , @OperatingSystem = %s
+                    , @AccountNumber = %s
+                    , @PaymentMethod = %s
+                    , @Membership = %s
+                    , @CreditCardExpiry = %s
+                    , @CreditCardNumber = %s
+                    , @Notes = %s
+                    , @DateJoined = %s
+                    , @NextBilling = %s
+                    , @AccountSetupBy = %s
+                    , @ReferredBy = %s
+                    , @GovID = %s
+                    , @GovConfirmation = %s
+                    , @GovAmount = %s
+                    , @OneTimeCharge = %s
+                    , @OneTimeQty = %s
+                    , @Language = %s
+                    , @DebugLevel = %d
+                    , @Operator = %s
                     """
                 creditCardExpiry = _sanitizeCreditCardExpiry(formUserDetail.data["creditCardExpiry"])
                 updateAladinParam1 = f"""
@@ -614,9 +662,26 @@ def create_app(test_config=None):
                         , 1
                         , {formUserDetail.data["operator"]}
                     """
-                updateAladinSQL2 = "EXECUTE second query"
-                flash(updateAladinSQL1 + " " + updateAladinParam1 + ";", "success")
-                flash(updateAladinSQL2 + ";", "success")
+                updateAladinSQL2 = f"""
+                    UPDATE UsersId SET
+                        BankName = %s
+                        , CheckNumber = %s
+                        , BankAccount = %s
+                        , IdentificationCard = %s
+                        , AuthorizationCode = %s
+                    WHERE LoginName = %s
+                    """
+                updateAladinParam2 = f"""
+                        {formUserDetail.data["bankName"]}
+                        , {formUserDetail.data["checkNumber"]}
+                        , {formUserDetail.data["bankAccount"]}
+                        , {formUserDetail.data["identificationCard"]}
+                        , {formUserDetail.data["authorizationCode"]}
+                   """
+                flash(updateAladinSQL1, "success")
+                flash(updateAladinParam1, "success")
+                flash(updateAladinSQL2, "success")
+                flash(updateAladinParam2, "success")
             except:
                 # db.session.rollback()
                 flash("Error: could not save.", "danger")
