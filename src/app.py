@@ -8,6 +8,7 @@ It requires exported variables:
 'DB_PASS'     password to access Aladin
 'HTTP_USER'   username for http authentication
 'HTTP_PASS'   password for http authentication
+'OPERATORS'   list of operator names separated by space
 'API_KEY1'    API1 for post address find
 'API_KEY2'    API2 for post address retrieve
 'API_REFERER' referrer URL for post address APIs
@@ -330,15 +331,16 @@ class FormUserDetail(FlaskForm):
         description="",
         render_kw={"placeholder": ""},
     )
-    operator = StringField(
+    operatorNames = os.environ.get("OPERATORS") or "Other"
+    operator = SelectField(
         label="operator",
+        choices = [(op, op) for op in operatorNames.split(" ")],
         validators=[
             Optional(),
             Length(1, 30),
-            Regexp("^[\w. &/'#:-]*[\w.]$", message="incorrect characters used"),
+            Regexp("^[\w.-]*$", message="incorrect characters used"),
         ],
         description="",
-        render_kw={"placeholder": ""},
     )
     referredBy = StringField(
         label="referredBy",
@@ -561,7 +563,7 @@ def create_app(test_config=None):
             formUserDetail.operatingSystem.data = str(
                 usersDict["OperatingSystem"] or ""
             )
-            formUserDetail.operator.data = str(usersDict["Operator"] or "")
+            formUserDetail.operator.process_data(str(usersDict["Operator"]).strip())
             formUserDetail.referredBy.data = str(usersDict["ReferredBy"] or "")
             formUserDetail.notes.data = str(usersDict["Notes"] or "")
             formUserDetail.dateJoined.data = str(usersDict["DateJoined"] or "")
@@ -683,6 +685,7 @@ def create_app(test_config=None):
                         , {formUserDetail.data["bankAccount"]}
                         , {formUserDetail.data["identificationCard"]}
                         , {formUserDetail.data["authorizationCode"]}
+                        , {formUserDetail.data["loginName"]}
                    """
                 flash(updateAladinSQL1, "success")
                 flash(updateAladinParam1, "success")
