@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Updateuser User Info on Aladin mssql
+"""Updateuser on Aladin mssql
 
-This flask page uses Flask and WTF
+This flask page uses Flask and WTF and pymssql to update Aladin
 It is a flask-blueprint called from app.py
 
 Example:
@@ -19,9 +19,24 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms.validators import InputRequired, Optional, Length, Regexp, ValidationError
 from wtforms.fields import *
+from pymssql import _mssql
 from src.canadapost import getIDsFromIndex, getIndexFromPostal, getAddressFromID
 
 updateuser = Blueprint("updateuser", __name__)
+
+class fake_mssql:
+    def connect(server, user, password, database):
+        return fake_mssql()
+
+    def execute_query(self, query, params):
+        return fake_mssql()
+
+    def execute_scalar(self, query, params):
+        return fake_mssql()
+
+    def close(self):
+        return fake_mssql()
+
 
 class FormSearchLogin(FlaskForm):
     class Meta:
@@ -361,6 +376,39 @@ if current_app.config["HTTP_USER"] and current_app.config["HTTP_PASS"]:
     }
 else:
     authorizedUsers = None
+
+if current_app.config["DB_IP"] is None:
+    dbLink = fake_mssql.connect(
+        server="",
+        user="",
+        password="",
+        database="",
+    )
+else:
+    dbLink = _mssql.connect(
+        server=current_app.config["DB_IP"],
+        user=current_app.config["DB_USER"],
+        password=current_app.config["DB_PASS"],
+        database="wwwMaintenance",
+    )
+
+def queryDBrow(query, params=""):
+    dbLink.execute_query(query, params)
+    queryResult = {}
+    # trick to differentiate pymssql vs fake_mssql
+    if hasattr(dbLink, "__iter__"):
+        for row in dbLink:
+            for column in row.keys():
+                if isinstance(column, str):
+                    queryResult.update({column: row[column]})
+            break
+    dbLink.close
+    return queryResult
+
+def queryDBscalar(query, params=""):
+    queryResult = dbLink.execute_scalar(query, params)
+    dbLink.close
+    return queryResult
 
 def isUserExist(loginName):
     isUserExist = None

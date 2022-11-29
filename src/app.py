@@ -26,21 +26,6 @@ import os
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap5
 from werkzeug.middleware.proxy_fix import ProxyFix
-from pymssql import _mssql
-
-
-class fake_mssql:
-    def connect(server, user, password, database):
-        return fake_mssql()
-
-    def execute_query(self, query, params):
-        return fake_mssql()
-
-    def execute_scalar(self, query, params):
-        return fake_mssql()
-
-    def close(self):
-        return fake_mssql()
 
 
 def create_app(test_config=None):
@@ -58,39 +43,6 @@ def create_app(test_config=None):
 
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
     bootstrap = Bootstrap5(app)
-
-    if app.config["DB_IP"] is None:
-        dbLink = fake_mssql.connect(
-            server="",
-            user="",
-            password="",
-            database="",
-        )
-    else:
-        dbLink = _mssql.connect(
-            server=app.config["DB_IP"],
-            user=app.config["DB_USER"],
-            password=app.config["DB_PASS"],
-            database="wwwMaintenance",
-        )
-
-    def queryDBrow(query, params=""):
-        dbLink.execute_query(query, params)
-        queryResult = {}
-        # trick to differentiate pymssql vs fake_mssql
-        if hasattr(dbLink, "__iter__"):
-            for row in dbLink:
-                for column in row.keys():
-                    if isinstance(column, str):
-                        queryResult.update({column: row[column]})
-                break
-        dbLink.close
-        return queryResult
-
-    def queryDBscalar(query, params=""):
-        queryResult = dbLink.execute_scalar(query, params)
-        dbLink.close
-        return queryResult
 
     @app.route("/")
     def index():
