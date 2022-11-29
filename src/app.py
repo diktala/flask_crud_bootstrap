@@ -23,15 +23,15 @@ Attributes:
     [...]
 """
 import os
-from flask import Flask, render_template, request, flash, Markup, redirect, url_for
-from flask_bootstrap import Bootstrap5, SwitchField
+from flask import Flask, render_template
+from flask_bootstrap import Bootstrap5
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
-    app.config["SECRET_KEY"] = "dev"
+    app.config["SECRET_KEY"] = os.urandom(12)
     app.config["BOOTSTRAP_SERVE_LOCAL"] = True
     app.config["WTF_CSRF_ENABLED"] = True
     app.config["DB_IP"] = os.environ.get("DB_IP")
