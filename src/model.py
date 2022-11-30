@@ -4,13 +4,15 @@
 This contains functions to be called by Flask blueprints to access Aladin sql
 
 Example:
-    myResult = queryDBall('SELECT "DateJoined", LoginName FROM UsersId')
-    myResultJson = json.dumps(myResult, indent = 4)
-    print (myResultJson)
-    pprint(myResult)
-    # ex: python src/erz-quick-query.py > temp-file.txt
-    #     cat temp-file.txt | jq '.'
-    #     cat temp-file.txt| jq -C '. | [.[]] | .[] | ."ReferredBy" '
+#python:
+import json
+from src.model import queryDBall, queryDBrow, queryDBscalar
+myResult = queryDBall('SELECT LoginName FROM UsersId')
+myResultJson = json.dumps(myResult, indent = 4)
+f = open('temp-file.json','w')
+f.write(myResultJson)
+
+>cat temp-file.json| jq -C '. | [.[]] | .[] | ."LoginName" '
 """
 import os
 from pymssql import _mssql
