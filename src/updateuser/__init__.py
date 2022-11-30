@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Updateuser on Aladin mssql
+""" Updateuser
 
 This flask page uses Flask and WTF and pymssql to update Aladin
 It is a flask-blueprint called from app.py
@@ -19,23 +19,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms.validators import InputRequired, Optional, Length, Regexp, ValidationError
 from wtforms.fields import *
-from pymssql import _mssql
+from src.model import queryDBscalar, queryDBrow
 from src.canadapost import getIDsFromIndex, getIndexFromPostal, getAddressFromID
 
 updateuser = Blueprint("updateuser", __name__)
-
-class fake_mssql:
-    def connect(server, user, password, database):
-        return fake_mssql()
-
-    def execute_query(self, query, params):
-        return fake_mssql()
-
-    def execute_scalar(self, query, params):
-        return fake_mssql()
-
-    def close(self):
-        return fake_mssql()
 
 
 class FormSearchLogin(FlaskForm):
@@ -323,7 +310,7 @@ class FormUserDetail(FlaskForm):
     operatorNames = current_app.config["OPERATORS"] or "Other"
     operator = SelectField(
         label="operator",
-        choices = [(op, op) for op in operatorNames.split(" ")],
+        choices=[(op, op) for op in operatorNames.split(" ")],
         validators=[
             Optional(),
             Length(1, 30),
@@ -372,43 +359,13 @@ class FormUserDetail(FlaskForm):
 auth = HTTPBasicAuth()
 if current_app.config["HTTP_USER"] and current_app.config["HTTP_PASS"]:
     authorizedUsers = {
-        current_app.config["HTTP_USER"]: generate_password_hash(current_app.config["HTTP_PASS"])
+        current_app.config["HTTP_USER"]: generate_password_hash(
+            current_app.config["HTTP_PASS"]
+        )
     }
 else:
     authorizedUsers = None
 
-if current_app.config["DB_IP"] is None:
-    dbLink = fake_mssql.connect(
-        server="",
-        user="",
-        password="",
-        database="",
-    )
-else:
-    dbLink = _mssql.connect(
-        server=current_app.config["DB_IP"],
-        user=current_app.config["DB_USER"],
-        password=current_app.config["DB_PASS"],
-        database="wwwMaintenance",
-    )
-
-def queryDBrow(query, params=""):
-    dbLink.execute_query(query, params)
-    queryResult = {}
-    # trick to differentiate pymssql vs fake_mssql
-    if hasattr(dbLink, "__iter__"):
-        for row in dbLink:
-            for column in row.keys():
-                if isinstance(column, str):
-                    queryResult.update({column: row[column]})
-            break
-    dbLink.close
-    return queryResult
-
-def queryDBscalar(query, params=""):
-    queryResult = dbLink.execute_scalar(query, params)
-    dbLink.close
-    return queryResult
 
 def isUserExist(loginName):
     isUserExist = None
@@ -420,6 +377,7 @@ def isUserExist(loginName):
             loginName,
         )
     return isUserExist
+
 
 def _sanitizeCreditCardExpiry(ccExp=""):
     output = ""
@@ -435,6 +393,7 @@ def _sanitizeCreditCardExpiry(ccExp=""):
         pass
     return output
 
+
 @auth.verify_password
 def verify_password(username, password):
     if authorizedUsers is None:
@@ -449,7 +408,8 @@ def verify_password(username, password):
 @updateuser.route("/test")
 def testroute():
     myVar = current_app.config["DB_IP"]
-    return F"<h1>{myVar} Hurrah!!</h1>"
+    return f"<h1>{myVar} Hurrah!!</h1>"
+
 
 @updateuser.route("/", methods=["GET", "POST"])
 @auth.login_required
@@ -499,15 +459,13 @@ def updateuser_form():
           WHERE
               LoginName = %s
           """,
-          formSearchLogin.data["loginName"],
+            formSearchLogin.data["loginName"],
         )
         formUserDetail = FormUserDetail()
         formUserDetail.loginName.data = str(formSearchLogin.data["loginName"] or "")
         formUserDetail.firstName.data = str(usersDict["FirstName"] or "")
         formUserDetail.lastName.data = str(usersDict["LastName"] or "")
-        formUserDetail.organizationName.data = str(
-            usersDict["OrganizationName"] or ""
-        )
+        formUserDetail.organizationName.data = str(usersDict["OrganizationName"] or "")
         formUserDetail.address.data = str(usersDict["Address"] or "")
         formUserDetail.city.data = str(usersDict["City"] or "")
         formUserDetail.state.data = str(usersDict["State"] or "")
@@ -519,9 +477,7 @@ def updateuser_form():
         formUserDetail.paymentMethod.process_data(
             str(usersDict["PaymentMethod"].strip())
         )
-        formUserDetail.creditCardNumber.data = str(
-            usersDict["CreditCardNumber"] or ""
-        )
+        formUserDetail.creditCardNumber.data = str(usersDict["CreditCardNumber"] or "")
         formUserDetail.creditCardExpiry.data = _sanitizeCreditCardExpiry(
             str(usersDict["CreditCardExpiry"] or "")
         )
@@ -534,9 +490,7 @@ def updateuser_form():
         formUserDetail.authorizationCode.data = str(
             usersDict["AuthorizationCode"] or ""
         )
-        formUserDetail.operatingSystem.data = str(
-            usersDict["OperatingSystem"] or ""
-        )
+        formUserDetail.operatingSystem.data = str(usersDict["OperatingSystem"] or "")
         formUserDetail.operator.process_data(str(usersDict["Operator"]).strip())
         formUserDetail.referredBy.data = str(usersDict["ReferredBy"] or "")
         formUserDetail.notes.data = str(usersDict["Notes"] or "")
@@ -676,4 +630,3 @@ def updateuser_form():
         formUserDetail=formUserDetail,
         isUserExist=isUserExist(formSearchLogin.data["loginName"]),
     )
-

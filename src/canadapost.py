@@ -44,86 +44,85 @@ API_KEY2 = os.environ.get("API_KEY2")
 API_REFERER = os.environ.get("API_REFERER")
 
 headers = {
-    'User-Agent' : 'Mozilla/5.0 (Macintosh; ) Gecko/20100101 Firefox/73.0'
-   ,'Referer'    : API_REFERER
+    "User-Agent": "Mozilla/5.0 (Macintosh; ) Gecko/20100101 Firefox/73.0",
+    "Referer": API_REFERER,
 }
 
 payload = {
-  'Key' : API_KEY1
-, 'Country' : 'CAN'
-, 'LanguagePreference' : 'fr'
-, 'SearchFor' : 'Everything'
-, 'OrderBy' : 'UserLocation'
-, '$block' : 'true'
-, '$cache' : 'true'
-, 'MaxResults' : '500'
-, 'SearchTerm' : ''
-, 'LastId' : ''
+    "Key": API_KEY1,
+    "Country": "CAN",
+    "LanguagePreference": "fr",
+    "SearchFor": "Everything",
+    "OrderBy": "UserLocation",
+    "$block": "true",
+    "$cache": "true",
+    "MaxResults": "500",
+    "SearchTerm": "",
+    "LastId": "",
 }
 
-def _sanitizeString(stringToCheck=''):
-    stringReturned = ''
-    if (isinstance(stringToCheck, str)
+
+def _sanitizeString(stringToCheck=""):
+    stringReturned = ""
+    if (
+        isinstance(stringToCheck, str)
         and len(stringToCheck) < 60
-        and re.match('^[a-zA-Z0-9 _|-]*$', stringToCheck)
-       ):
+        and re.match("^[a-zA-Z0-9 _|-]*$", stringToCheck)
+    ):
         stringReturned = stringToCheck
     return stringReturned
-        
-def getIndexFromPostal(searchTerm='H0H 0H0'):
+
+
+def getIndexFromPostal(searchTerm="H0H 0H0"):
     searchTerm = _sanitizeString(searchTerm)
-    payload['SearchTerm'] = searchTerm
-    payload['LastId'] = ''
-    url = 'https://ws1.postescanada-canadapost.ca'
-    url += '/AddressComplete/Interactive/Find/v2.10/json3ex.ws'
-    indexID = ''
+    payload["SearchTerm"] = searchTerm
+    payload["LastId"] = ""
+    url = "https://ws1.postescanada-canadapost.ca"
+    url += "/AddressComplete/Interactive/Find/v2.10/json3ex.ws"
+    indexID = ""
     try:
-        r = requests.get(url, headers = headers, params=payload )
-        indexID = r.json()[list(r.json().keys())[0]][0]['Id']
+        r = requests.get(url, headers=headers, params=payload)
+        indexID = r.json()[list(r.json().keys())[0]][0]["Id"]
     except:
         pass
 
     return indexID
 
 
-def getIDsFromIndex(Index=''):
+def getIDsFromIndex(Index=""):
     Index = _sanitizeString(Index)
-    payload['SearchTerm'] = ''
-    payload['LastId'] = Index
-    url = 'https://ws1.postescanada-canadapost.ca'
-    url += '/AddressComplete/Interactive/Find/v2.10/json3ex.ws'
+    payload["SearchTerm"] = ""
+    payload["LastId"] = Index
+    url = "https://ws1.postescanada-canadapost.ca"
+    url += "/AddressComplete/Interactive/Find/v2.10/json3ex.ws"
     listOfAddresses = {}
     try:
-        s = requests.get(url, headers = headers, params=payload )
+        s = requests.get(url, headers=headers, params=payload)
         for eachID in s.json()[list(s.json().keys())[0]]:
-            listOfAddresses[ eachID['Id'] ] = eachID['Text']+ ', '+eachID['Description']
+            listOfAddresses[eachID["Id"]] = (
+                eachID["Text"] + ", " + eachID["Description"]
+            )
     except:
         pass
 
     return listOfAddresses
 
 
-def getAddressFromID(addressID=''):
+def getAddressFromID(addressID=""):
     addressID = _sanitizeString(addressID)
-    payload = {
-      'Key' : API_KEY2
-    , 'Source' : ''
-    , '$cache' : 'true'
-    , 'Id'     : addressID
-    }
-    url = 'https://ws1.postescanada-canadapost.ca'
-    url += '/AddressComplete/Interactive/RetrieveFormatted/v2.10/json3ex.ws'
+    payload = {"Key": API_KEY2, "Source": "", "$cache": "true", "Id": addressID}
+    url = "https://ws1.postescanada-canadapost.ca"
+    url += "/AddressComplete/Interactive/RetrieveFormatted/v2.10/json3ex.ws"
     detailAddress = {}
 
     try:
-        t = requests.get(url, headers = headers, params=payload )
-        detailAddress['Id'] = addressID
-        detailAddress['Line1'] = t.json()['Items'][0]['Line1']
-        detailAddress['PostalCode'] = t.json()['Items'][0]['PostalCode']
-        detailAddress['ProvinceCode'] = t.json()['Items'][0]['ProvinceCode']
-        detailAddress['City'] = t.json()['Items'][0]['City']
+        t = requests.get(url, headers=headers, params=payload)
+        detailAddress["Id"] = addressID
+        detailAddress["Line1"] = t.json()["Items"][0]["Line1"]
+        detailAddress["PostalCode"] = t.json()["Items"][0]["PostalCode"]
+        detailAddress["ProvinceCode"] = t.json()["Items"][0]["ProvinceCode"]
+        detailAddress["City"] = t.json()["Items"][0]["City"]
     except:
         pass
 
     return detailAddress
-
