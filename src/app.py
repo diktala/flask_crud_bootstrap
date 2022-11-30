@@ -14,6 +14,7 @@ It picks up the shell exported variables:
 'API_KEY1'    API1 for post address find
 'API_KEY2'    API2 for post address retrieve
 'API_REFERER' referrer URL for post address APIs
+'OPERATORS'   usernames separated by space
 
 Example:
     python
