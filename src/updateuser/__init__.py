@@ -367,7 +367,7 @@ else:
     authorizedUsers = None
 
 
-def isUserExist(loginName):
+def _isUserExist(loginName):
     isUserExist = None
     if loginName:
         isUserExist = queryDBscalar(
@@ -426,7 +426,7 @@ def updateuser_form():
         request.method == "GET"
         and "loginName" in request.args
         and formSearchLogin.validate()
-        and isUserExist(formSearchLogin.data["loginName"]) == 1
+        and _isUserExist(formSearchLogin.data["loginName"]) == 1
     ):
         usersDict = queryDBrow(
             """SELECT
@@ -568,52 +568,52 @@ def updateuser_form():
                 formUserDetail.data["creditCardExpiry"]
             )
             updateAladinParam1 = f"""
-        	    {formUserDetail.data["loginName"]}
-        	    , {formUserDetail.data["firstName"]}
-        	    , {formUserDetail.data["lastName"]}
-        	    , {formUserDetail.data["organizationName"]}
-        	    , {formUserDetail.data["address"]}
-        	    , {formUserDetail.data["city"]}
-        	    , {formUserDetail.data["state"]}
-        	    , {formUserDetail.data["postalCode"]}
-        	    , {formUserDetail.data["country"]}
-        	    , {formUserDetail.data["homePhone"]}
-        	    , {formUserDetail.data["operatingSystem"]}
-        	    , {formUserDetail.data["accountNumber"]}
-        	    , {formUserDetail.data["paymentMethod"]}
-        	    ,
-        	    , {creditCardExpiry}
-        	    , {formUserDetail.data["creditCardNumber"]}
-        	    , {formUserDetail.data["notes"]}
-        	    , {formUserDetail.data["dateJoined"]}
-        	    ,
-        	    ,
-        	    , {formUserDetail.data["referredBy"]}
-        	    ,
-        	    ,
-        	    ,
-        	    ,
-        	    ,
-        	    , {formUserDetail.data["language"]}
-        	    , 1
-        	    , {formUserDetail.data["operator"]}
+                    {formUserDetail.data["loginName"]}
+                    , {formUserDetail.data["firstName"]}
+                    , {formUserDetail.data["lastName"]}
+                    , {formUserDetail.data["organizationName"]}
+                    , {formUserDetail.data["address"]}
+                    , {formUserDetail.data["city"]}
+                    , {formUserDetail.data["state"]}
+                    , {formUserDetail.data["postalCode"]}
+                    , {formUserDetail.data["country"]}
+                    , {formUserDetail.data["homePhone"]}
+                    , {formUserDetail.data["operatingSystem"]}
+                    , {formUserDetail.data["accountNumber"]}
+                    , {formUserDetail.data["paymentMethod"]}
+                    ,
+                    , {creditCardExpiry}
+                    , {formUserDetail.data["creditCardNumber"]}
+                    , {formUserDetail.data["notes"]}
+                    , {formUserDetail.data["dateJoined"]}
+                    ,
+                    ,
+                    , {formUserDetail.data["referredBy"]}
+                    ,
+                    ,
+                    ,
+                    ,
+                    ,
+                    , {formUserDetail.data["language"]}
+                    , 1
+                    , {formUserDetail.data["operator"]}
                 """
             updateAladinSQL2 = f"""
                 UPDATE UsersId SET
-        	    BankName = %s
-        	    , CheckNumber = %s
-        	    , BankAccount = %s
-        	    , IdentificationCard = %s
-        	    , AuthorizationCode = %s
+                    BankName = %s
+                    , CheckNumber = %s
+                    , BankAccount = %s
+                    , IdentificationCard = %s
+                    , AuthorizationCode = %s
                 WHERE LoginName = %s
                 """
             updateAladinParam2 = f"""
-        	    {formUserDetail.data["bankName"]}
-        	    , {formUserDetail.data["checkNumber"]}
-        	    , {formUserDetail.data["bankAccount"]}
-        	    , {formUserDetail.data["identificationCard"]}
-        	    , {formUserDetail.data["authorizationCode"]}
-        	    , {formUserDetail.data["loginName"]}
+                    {formUserDetail.data["bankName"]}
+                    , {formUserDetail.data["checkNumber"]}
+                    , {formUserDetail.data["bankAccount"]}
+                    , {formUserDetail.data["identificationCard"]}
+                    , {formUserDetail.data["authorizationCode"]}
+                    , {formUserDetail.data["loginName"]}
                """
             flash(updateAladinSQL1, "success")
             flash(updateAladinParam1, "success")
@@ -628,5 +628,5 @@ def updateuser_form():
         "updateuser.html",
         formSearchLogin=formSearchLogin,
         formUserDetail=formUserDetail,
-        isUserExist=isUserExist(formSearchLogin.data["loginName"]),
+        isUserExist=_isUserExist(formSearchLogin.data["loginName"]),
     )
