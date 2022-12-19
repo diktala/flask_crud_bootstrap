@@ -416,11 +416,11 @@ def testroute():
 def updateuser_form():
     formSearchLogin = FormSearchLogin(request.args)
     formUserDetail = FormUserDetail()
-
+    """ --- """
     """ URL contains ?LoginName=someuser """
     if request.method == "GET" and request.args.get("LoginName") is not None:
         formSearchLogin.loginName.data = request.args.get("LoginName")
-
+    """ --- """
     """ Button Pressed SEARCH Login """
     if (
         request.method == "GET"
@@ -495,7 +495,7 @@ def updateuser_form():
         formUserDetail.referredBy.data = str(usersDict["ReferredBy"] or "")
         formUserDetail.notes.data = str(usersDict["Notes"] or "")
         formUserDetail.dateJoined.data = str(usersDict["DateJoined"] or "")
-
+    """ --- """
     """ Button Pressed LOOKUP postal code """
     if (
         request.method == "POST"
@@ -509,7 +509,7 @@ def updateuser_form():
         ]
         myChoices += [(k, v) for k, v in listOfAddresses.items()]
         formUserDetail.addressSelect.choices = myChoices
-
+    """ --- """
     """ Button Pressed APPLY postal code """
     if (
         request.method == "POST"
@@ -524,7 +524,7 @@ def updateuser_form():
             formUserDetail.country.data = "Canada"
             formUserDetail.postalCode.data = postalAddress["PostalCode"]
             flash(f"address applied: {formUserDetail.address.data}", "primary")
-
+    """ --- """
     """ Button Pressed UPDATE Userinfo """
     if (
         request.method == "POST"
@@ -623,10 +623,17 @@ def updateuser_form():
             formSearchLogin.loginName.data = ""
         except:
             flash("Error: could not save.", "danger")
-
+    """ --- """
+    """ display page """
+    loginName = formSearchLogin.data['loginName'] or ""
+    isUserExist=_isUserExist(formSearchLogin.data["loginName"])
+    domain = current_app.config["DOMAIN"] or "example.com"
+    urlQuery = F"LoginName={loginName}"
     return render_template(
         "updateuser.html",
-        formSearchLogin=formSearchLogin,
-        formUserDetail=formUserDetail,
-        isUserExist=_isUserExist(formSearchLogin.data["loginName"]),
+        formSearchLogin = formSearchLogin,
+        formUserDetail = formUserDetail,
+        isUserExist= isUserExist,
+        domain = domain,
+        urlQuery = urlQuery
     )

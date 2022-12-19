@@ -15,6 +15,7 @@ It picks up the shell exported variables:
 'API_KEY2'    API2 for post address retrieve
 'API_REFERER' referrer URL for post address APIs
 'OPERATORS'   usernames separated by space
+'DOMAIN'      domain name in topmenu i.e example.com
 
 Example:
     python
@@ -38,6 +39,7 @@ def create_app(test_config=None):
     app.config["HTTP_USER"] = os.environ.get("HTTP_USER")
     app.config["HTTP_PASS"] = os.environ.get("HTTP_PASS")
     app.config["OPERATORS"] = os.environ.get("OPERATORS")
+    app.config["DOMAIN"] = os.environ.get("DOMAIN")
 
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
     bootstrap = Bootstrap5(app)
