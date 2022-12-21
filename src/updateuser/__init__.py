@@ -22,7 +22,42 @@ from wtforms.fields import *
 from src.model import queryDBscalar, queryDBrow
 from src.canadapost import getIDsFromIndex, getIndexFromPostal, getAddressFromID
 
+""" --- """
+""" define url http://.../updateuser/ """
 updateuser = Blueprint("updateuser", __name__)
+
+
+""" --- """
+""" load user info HTTPBasicAuth """
+auth = HTTPBasicAuth()
+if current_app.config["HTTP_USER"] and current_app.config["HTTP_PASS"]:
+    authorizedUsers = {
+        current_app.config["HTTP_USER"]: generate_password_hash(
+            current_app.config["HTTP_PASS"]
+        )
+    }
+else:
+    authorizedUsers = None
+
+
+""" --- """
+""" check http user (called by decorator @auth.login_required) """
+
+
+@auth.verify_password
+def verify_password(username, password):
+    if authorizedUsers is None:
+        return True
+    """ --- """
+    """ enforce http auth only if env HTTP_USER is defined """
+    if username in authorizedUsers and check_password_hash(
+        authorizedUsers.get(username), password
+    ):
+        return username
+
+
+""" --- """
+""" Class used to generate FORM SearchLogin """
 
 
 class FormSearchLogin(FlaskForm):
@@ -44,6 +79,10 @@ class FormSearchLogin(FlaskForm):
         render_kw={"placeholder": "Customer username"},
     )
     submit = SubmitField(label="Search")
+
+
+""" --- """
+""" Class used to generate FORM UserDetail """
 
 
 class FormUserDetail(FlaskForm):
@@ -214,11 +253,14 @@ class FormUserDetail(FlaskForm):
         description="",
         render_kw={"placeholder": ""},
     )
+    """ --- """
+    """ validate creditCardNumber WTForms """
 
     def validate_creditCardNumber(form, field):
         if not form.creditCardExpiry.data:
             raise ValidationError("missing credit card expiration date")
 
+    """ --- """
     creditCardExpiry = StringField(
         label="creditCardExpiry",
         validators=[
@@ -229,8 +271,13 @@ class FormUserDetail(FlaskForm):
         description="",
         render_kw={"placeholder": ""},
     )
+    """ --- """
+    """ validate creditCardExpiry WTForms """
 
     def validate_creditCardExpiry(form, field):
+        """---"""
+        """ check if date is valid otherwise return False """
+
         def _isDateValid(stringDate=""):
             output = False
             try:
@@ -242,11 +289,13 @@ class FormUserDetail(FlaskForm):
                 pass
             return output
 
+        """ --- """
         if field.data and not _isDateValid(field.data):
             raise ValidationError("CC Exp is invalid or expired")
         if not form.creditCardNumber.data:
             raise ValidationError("missing credit cardnumber")
 
+    """ --- """
     bankName = StringField(
         label="bankName",
         validators=[
@@ -356,15 +405,8 @@ class FormUserDetail(FlaskForm):
     updateUser = SubmitField(label="Update")
 
 
-auth = HTTPBasicAuth()
-if current_app.config["HTTP_USER"] and current_app.config["HTTP_PASS"]:
-    authorizedUsers = {
-        current_app.config["HTTP_USER"]: generate_password_hash(
-            current_app.config["HTTP_PASS"]
-        )
-    }
-else:
-    authorizedUsers = None
+""" --- """
+""" check if user Exist, returns None otherwise """
 
 
 def _isUserExist(loginName):
@@ -377,6 +419,10 @@ def _isUserExist(loginName):
             loginName,
         )
     return isUserExist
+
+
+""" --- """
+""" sanitize credit card expiry """
 
 
 def _sanitizeCreditCardExpiry(ccExp=""):
@@ -394,21 +440,18 @@ def _sanitizeCreditCardExpiry(ccExp=""):
     return output
 
 
-@auth.verify_password
-def verify_password(username, password):
-    if authorizedUsers is None:
-        return True
-
-    if username in authorizedUsers and check_password_hash(
-        authorizedUsers.get(username), password
-    ):
-        return username
+""" --- """
+""" browser clicked updateuser/test """
 
 
 @updateuser.route("/test")
 def testroute():
     myVar = current_app.config["DB_IP"]
     return f"<h1>{myVar} Hurrah!!</h1>"
+
+
+""" --- """
+""" browser clicked updateuser/ """
 
 
 @updateuser.route("/", methods=["GET", "POST"])
@@ -625,15 +668,15 @@ def updateuser_form():
             flash("Error: could not save.", "danger")
     """ --- """
     """ display page """
-    loginName = formSearchLogin.data['loginName'] or ""
-    isUserExist=_isUserExist(formSearchLogin.data["loginName"])
+    loginName = formSearchLogin.data["loginName"] or ""
+    isUserExist = _isUserExist(formSearchLogin.data["loginName"])
     domain = current_app.config["DOMAIN"] or "example.com"
-    urlQuery = F"LoginName={loginName}"
+    urlQuery = f"LoginName={loginName}"
     return render_template(
         "updateuser.html",
-        formSearchLogin = formSearchLogin,
-        formUserDetail = formUserDetail,
-        isUserExist= isUserExist,
-        domain = domain,
-        urlQuery = urlQuery
+        formSearchLogin=formSearchLogin,
+        formUserDetail=formUserDetail,
+        isUserExist=isUserExist,
+        domain=domain,
+        urlQuery=urlQuery,
     )
