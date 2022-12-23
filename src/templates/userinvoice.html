@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% from 'bootstrap5/form.html' import render_form, render_field, render_form_row %}
+{% if isUserExist %}
+    {%    set buttonStyle = "success" %}
+    {%    set isValid     = "is-valid" %}
+    {%    set isDisabled     = "" %}
+{% else %}
+    {%    set buttonStyle = "secondary" %}
+    {%    set isValid     = "is-invalid" %}
+    {%    set isDisabled     = "" %}
+{% endif %}
+{% block content %}
+    <!-- form UserInvoice -->
+    <form id="UserInfoForm" action="" novalidate="" method="POST">
+    {{ formUserDetail.csrf_token }}
+    {{ formUserDetail.dateJoined }}
+        <div class="row g-3">
+            <fieldset class="form-group border" {{ isDisabled }}>
+                <legend>
+                    User Invoice
+                </legend>
+                <button disabled style="display:none;">
+                <!-- this hidden button to disable submit on Enter key -->
+                </button>
+                {{ render_form_row([formUserDetail.loginName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.userInvoice], form_type="horizontal", horizontal_columns=("sm", 0, 2), button_style="secondary" ) }}
+            </fieldset>
+        </div>
+    </form>
+    <!-- end form User Invoice -->
+{% endblock %}

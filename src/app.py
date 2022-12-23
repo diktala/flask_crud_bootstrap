@@ -51,9 +51,11 @@ def create_app(test_config=None):
     with app.app_context():
         from src.updateuser import updateuser
         from src.createuser import createuser
+        from src.userinvoice import userinvoice
 
         app.register_blueprint(updateuser, url_prefix="/updateuser")
         app.register_blueprint(createuser, url_prefix="/createuser")
+        app.register_blueprint(userinvoice, url_prefix="/userinvoice")
         return app
 
     return app
