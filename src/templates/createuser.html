@@ -19,6 +19,9 @@
                 <legend>
                     User Info
                 </legend>
+                <button disabled style="display:none;">
+                <!-- this hidden button to disable submit on Enter key -->
+                </button>
                 {{ render_form_row([formUserDetail.loginName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
                 {{ render_form_row([formUserDetail.userPassword], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
                 {{ render_form_row([formUserDetail.firstName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
