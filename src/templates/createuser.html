@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% from 'bootstrap5/form.html' import render_form, render_field, render_form_row %}
+{% if isUserExist %}
+    {%    set buttonStyle = "success" %}
+    {%    set isValid     = "is-valid" %}
+    {%    set isDisabled     = "" %}
+{% else %}
+    {%    set buttonStyle = "secondary" %}
+    {%    set isValid     = "is-invalid" %}
+    {%    set isDisabled     = "" %}
+{% endif %}
+{% block content %}
+    <!-- form create users -->
+    <form id="UserInfoForm" action="" novalidate="" method="POST">
+    {{ formUserDetail.csrf_token }}
+    {{ formUserDetail.dateJoined }}
+        <div class="row g-3">
+            <fieldset class="form-group border" {{ isDisabled }}>
+                <legend>
+                    User Info
+                </legend>
+                {{ render_form_row([formUserDetail.loginName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.userPassword], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.firstName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.lastName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.organizationName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.address], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.city], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.state], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.postalCode, formUserDetail.lookupAddress, formUserDetail.addressSelect, formUserDetail.applyAddress], form_type="inline", col_map={'postalCode': 'offset-sm-2 col-sm-2', 'lookupAddress': 'col-sm-1', 'addressSelect': 'offset-sm-1 col-sm-4', 'applyAddress': 'col-sm-1'}, button_style="secondary", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.country], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.homePhone], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.language], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.paymentMethod], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.creditCardNumber], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.creditCardExpiry], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.bankName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.checkNumber], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.bankAccount], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.identificationCard], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.authorizationCode], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.operator], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.referredBy], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.notes], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.createUser], form_type="horizontal", horizontal_columns=("sm", 0, 2), button_style="secondary" ) }}
+            </fieldset>
+        </div>
+    </form>
+    <!-- end form create users -->
+{% endblock %}

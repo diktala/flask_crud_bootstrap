@@ -50,8 +50,10 @@ def create_app(test_config=None):
 
     with app.app_context():
         from src.updateuser import updateuser
+        from src.createuser import createuser
 
         app.register_blueprint(updateuser, url_prefix="/updateuser")
+        app.register_blueprint(createuser, url_prefix="/createuser")
         return app
 
     return app
