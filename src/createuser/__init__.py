@@ -364,18 +364,6 @@ class FormUserDetail(FlaskForm):
         description="",
         render_kw={"placeholder": ""},
     )
-    notes = StringField(
-        label="notes",
-        validators=[
-            InputRequired(),
-            Length(1, 250),
-            Regexp(
-                "^[\w. &'<>;+$()/=@,:*#\"\\[\]-]*$", message="incorrect characters used"
-            ),
-        ],
-        description="",
-        render_kw={"placeholder": ""},
-    )
     dateJoined = HiddenField(
         label="dateJoined",
         validators=[
