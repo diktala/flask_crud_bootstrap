@@ -79,7 +79,7 @@ class FormUserDetail(FlaskForm):
         validators=[
             InputRequired(),
             Length(1, 12),
-            Regexp("^[\w.-]+$", message="incorrect characters used"),
+            Regexp("^[\w.-]+$", message="characters allowed: a-z 0-9 . - "),
         ],
         description="",
         render_kw={"placeholder": ""},
