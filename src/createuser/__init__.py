@@ -377,7 +377,9 @@ class FormUserDetail(FlaskForm):
         description="",
         render_kw={"placeholder": ""},
     )
-    createUser = SubmitField(label="Create")
+    createUser = SubmitField(label="Create",
+        render_kw={"accesskey": "s", "title": "alt-S / ctrl-alt-S"},
+    )
 
 
 """ --- """

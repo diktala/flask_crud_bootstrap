@@ -402,7 +402,9 @@ class FormUserDetail(FlaskForm):
         description="",
         render_kw={"placeholder": ""},
     )
-    updateUser = SubmitField(label="Update")
+    updateUser = SubmitField(label="Update",
+        render_kw={"accesskey": "s", "title": "alt-S / ctrl-alt-S"},
+    )
 
 
 """ --- """
