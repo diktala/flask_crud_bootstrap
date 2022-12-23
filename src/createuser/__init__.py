@@ -549,7 +549,7 @@ def createuser_form():
             flash("Error: could not create user.", "danger")
     """ --- """
     """ display page """
-    loginName = formUserDetail.data["loginName"]
+    loginName = formUserDetail.data["loginName"] or ""
     domain = current_app.config["DOMAIN"] or "example.com"
     urlQuery = f"LoginName={loginName}"
     return render_template(
