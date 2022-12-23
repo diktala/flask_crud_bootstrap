@@ -388,10 +388,12 @@ def _isUserExist(loginName):
     isUserExist = None
     if loginName:
         isUserExist = queryDBscalar(
-            """SELECT count(*) as 'counter'
-             FROM UsersId
-             WHERE lower(LoginName) = lower(%s)""",
-            loginName,
+            """SELECT COUNT(*) AS 'counter'
+                FROM SecondaryMailbox
+                WHERE MainLoginName = lower( %(loginname1)s )
+                      OR MailBox = lower( %(loginname2)s )
+             """,
+            dict(loginname1=loginName, loginname2=loginName),
         )
     return isUserExist
 
