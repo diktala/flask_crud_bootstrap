@@ -98,21 +98,33 @@ def _getUserInvoice(formUserDetail):
     return allRows
 
 
+def _getUniqueInvoices( userInvoices ):
+    invoiceNumbers = set([])
+    for eachRow in userInvoices.values():
+        invoiceNumbers.add( eachRow['InvoiceNumber'] )
+    return invoiceNumbers
+
+
 """ --- """
 """ DB getUserInvoiceDetail  """
-def _getUserInvoiceDetail(invoiceNumber):
-    allRows = None
-    try:
-        updateAladinSQL1 = f"""
-            EXECUTE UserInvoiceDetail
-            @InvoiceNumber = %s
-            """
-        updateAladinParam1 = ( invoiceNumber , )
-        allRows = queryDBall(updateAladinSQL1, updateAladinParam1)
-        flash(f"UserInvoiceDetail queried successfully","success")
-    except:
-        flash("Error: could not get User Invoice Detail.", "danger")
-    return allRows
+def _getUserInvoiceDetail(allUserInvoices):
+    # invoiceNumber = allUserInvoices[0]["InvoiceNumber"]
+    invoiceNumbers = _getUniqueInvoices(allUserInvoices)
+    """ get invoicedetail for each invoice """
+    userInvoicesDetails={}
+    for eachInvoiceNumber in invoiceNumbers:
+        allRows = None
+        try:
+            updateAladinSQL1 = f"""
+                EXECUTE UserInvoiceDetail
+                @InvoiceNumber = %s
+                """
+            updateAladinParam1 = ( eachInvoiceNumber , )
+            allRows = queryDBall(updateAladinSQL1, updateAladinParam1)
+            userInvoicesDetails[eachInvoiceNumber] = allRows
+        except:
+            flash("could not get User Invoice Detail: {eachInvoiceNumber}", "danger")
+    return userInvoicesDetails
 
 
 """ --- """
@@ -142,8 +154,10 @@ def _processFormSubmit(formUserDetail):
         and formUserDetail.validate_on_submit()
     ):
         queryResult["UserInvoice"] = _getUserInvoice(formUserDetail)
-        queryResult["UserInvoiceDetail"] = _getUserInvoiceDetail('1501755')
+        allUserInvoices = queryResult["UserInvoice"]
+        queryResult["UserInvoiceDetail"] = _getUserInvoiceDetail(allUserInvoices)
         queryResult["UpdateUsersPlans"] = _getUpdateUsersPlans(formUserDetail)
+        # assert False
         flash(f"queryResult {queryResult}","success")
         return queryResult
 

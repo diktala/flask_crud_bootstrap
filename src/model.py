@@ -2,6 +2,9 @@
 """ Model to access Aladin mssql
 
 This contains functions to be called by Flask blueprints to access Aladin sql
+notice: may need to set env:
+LC_ALL=en_US.UTF-8
+LANG=en_US.UTF-8
 
 Example:
 #python:
