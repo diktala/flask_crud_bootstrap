@@ -19,7 +19,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms.validators import InputRequired, Optional, Length, Regexp, ValidationError
 from wtforms.fields import *
-from src.model import queryDBscalar, queryDBrow
+from src.model import queryDBscalar, queryDBrow, queryDBall
 from src.canadapost import getIDsFromIndex, getIndexFromPostal, getAddressFromID
 
 """ --- """
@@ -75,6 +75,80 @@ class FormUserDetail(FlaskForm):
 
 
 """ --- """
+""" URL contains ?LoginName=someuser """
+def _assignLoginFromUrl(formUserDetail):
+    if request.method == "GET" and request.args.get("LoginName"):
+        formUserDetail.loginName.data = request.args.get("LoginName")
+
+
+""" --- """
+""" DB getUserInvoice  """
+def _getUserInvoice(formUserDetail):
+    allRows = None
+    try:
+        updateAladinSQL1 = f"""
+            EXECUTE UserInvoice
+            @LoginName = %s
+            """
+        updateAladinParam1 = ( formUserDetail.data["loginName"] , )
+        allRows = queryDBall(updateAladinSQL1, updateAladinParam1)
+        flash(f"UserInvoice queried successfully","success")
+    except:
+        flash("Error: could not get User Invoice.", "danger")
+    return allRows
+
+
+""" --- """
+""" DB getUserInvoiceDetail  """
+def _getUserInvoiceDetail(invoiceNumber):
+    allRows = None
+    try:
+        updateAladinSQL1 = f"""
+            EXECUTE UserInvoiceDetail
+            @InvoiceNumber = %s
+            """
+        updateAladinParam1 = ( invoiceNumber , )
+        allRows = queryDBall(updateAladinSQL1, updateAladinParam1)
+        flash(f"UserInvoiceDetail queried successfully","success")
+    except:
+        flash("Error: could not get User Invoice Detail.", "danger")
+    return allRows
+
+
+""" --- """
+""" DB getUpdateUsersPlans  """
+def _getUpdateUsersPlans(formUserDetail):
+    allRows = None
+    try:
+        updateAladinSQL1 = f"""
+            EXECUTE UpdateUsersPlans
+            @LoginName = %s
+            """
+        updateAladinParam1 = ( formUserDetail.data["loginName"] , )
+        allRows = queryDBall(updateAladinSQL1, updateAladinParam1)
+        flash(f"UpdateUsersPlans queried successfully","success")
+    except:
+        flash("Error: could not get info from UpdateUsersPlans.", "danger")
+    return allRows
+
+
+""" --- """
+""" Button Pressed Search userinvoice """
+def _processFormSubmit(formUserDetail):
+    queryResult = {}
+    if (
+        request.method == "POST"
+        and formUserDetail.userInvoice.data
+        and formUserDetail.validate_on_submit()
+    ):
+        queryResult["UserInvoice"] = _getUserInvoice(formUserDetail)
+        queryResult["UserInvoiceDetail"] = _getUserInvoiceDetail('1501755')
+        queryResult["UpdateUsersPlans"] = _getUpdateUsersPlans(formUserDetail)
+        flash(f"queryResult {queryResult}","success")
+        return queryResult
+
+
+""" --- """
 """ browser clicked userinvoice/test """
 @userinvoice.route("/test")
 def testroute():
@@ -88,30 +162,10 @@ def testroute():
 @auth.login_required
 def userinvoice_form():
     formUserDetail = FormUserDetail()
-    """ --- """
-    """ URL contains ?LoginName=someuser """
-    if request.method == "GET" and request.args.get("LoginName") is not None:
-        formUserDetail.loginName.data = request.args.get("LoginName")
-    """ --- """
-    """ Button Pressed Search userinvoice """
-    if (
-        request.method == "POST"
-        and formUserDetail.userInvoice.data
-        and formUserDetail.validate_on_submit()
-    ):
-        try:
-            updateAladinSQL1 = f"""
-            EXECUTE UserInvoice
-                @LoginName = %s
-                """
-            updateAladinParam1 = f"""
-                    {formUserDetail.data["loginName"]}
-                """
-            flash(f"{formUserDetail.data['loginName']} queried successfully","success") 
-            flash(updateAladinSQL1, "success")
-            flash(updateAladinParam1, "success")
-        except:
-            flash("Error: could not find invoice.", "danger")
+    _assignLoginFromUrl(formUserDetail)
+    queryResult = _processFormSubmit(formUserDetail)
+    # flash(queryResult, "warning")
+
     """ --- """
     """ display page """
     loginName = formUserDetail.data["loginName"] or ""
