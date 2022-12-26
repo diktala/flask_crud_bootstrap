@@ -77,14 +77,16 @@ def queryDBscalar(query, params=""):
 
 def queryDBall(query, params=""):
     dbLink.execute_query(query, params)
-    lineNumber = 0
-    allRows = {}
+    # lineNumber = 0
+    allRows = []
     rowResult = {}
     for row in dbLink:
         for column in row.keys():
             if isinstance(column, str):
                 rowResult.update({column: row[column]})
-        allRows[lineNumber] = rowResult.copy()
-        lineNumber += 1
+        # allRows[lineNumber] = rowResult.copy()
+        # allRows[lineNumber] = rowResult.copy()
+        # lineNumber += 1
+        allRows.append(rowResult.copy())
     dbLink.close
     return allRows
