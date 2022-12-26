@@ -42,8 +42,6 @@ else:
 
 """ --- """
 """ check http user (called by decorator @auth.login_required) """
-
-
 @auth.verify_password
 def verify_password(username, password):
     if authorizedUsers is None:
@@ -98,19 +96,20 @@ def _getUserInvoice(formUserDetail):
     return allRows
 
 
+""" --- """
+""" returns list of invoices used by user  """
 def _getUniqueInvoices( userInvoices ):
     invoiceNumbers = set([])
-    for eachRow in userInvoices.values():
+    for eachRow in userInvoices:
         invoiceNumbers.add( eachRow['InvoiceNumber'] )
     return invoiceNumbers
 
 
 """ --- """
 """ DB getUserInvoiceDetail  """
+""" get invoicedetail for each invoice """
 def _getUserInvoiceDetail(allUserInvoices):
-    # invoiceNumber = allUserInvoices[0]["InvoiceNumber"]
     invoiceNumbers = _getUniqueInvoices(allUserInvoices)
-    """ get invoicedetail for each invoice """
     userInvoicesDetails={}
     for eachInvoiceNumber in invoiceNumbers:
         allRows = None
@@ -157,8 +156,6 @@ def _processFormSubmit(formUserDetail):
         allUserInvoices = queryResult["UserInvoice"]
         queryResult["UserInvoiceDetail"] = _getUserInvoiceDetail(allUserInvoices)
         queryResult["UpdateUsersPlans"] = _getUpdateUsersPlans(formUserDetail)
-        # assert False
-        flash(f"queryResult {queryResult}","success")
         return queryResult
 
 
@@ -177,17 +174,17 @@ def testroute():
 def userinvoice_form():
     formUserDetail = FormUserDetail()
     _assignLoginFromUrl(formUserDetail)
-    queryResult = _processFormSubmit(formUserDetail)
-    # flash(queryResult, "warning")
 
     """ --- """
     """ display page """
     loginName = formUserDetail.data["loginName"] or ""
     domain = current_app.config["DOMAIN"] or "example.com"
     urlQuery = f"LoginName={loginName}"
+    invoices = _processFormSubmit(formUserDetail)
     return render_template(
         "userinvoice.html",
         formUserDetail=formUserDetail,
         domain=domain,
         urlQuery=urlQuery,
+        invoices=invoices
     )

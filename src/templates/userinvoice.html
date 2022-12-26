@@ -13,7 +13,7 @@
     <!-- form UserInvoice -->
     <form id="UserInfoForm" action="" novalidate="" method="POST">
     {{ formUserDetail.csrf_token }}
-    {{ formUserDetail.dateJoined }}
+    {{ formUserDetail.BUGBUGdateJoined }}
         <div class="row g-3">
             <fieldset class="form-group border" {{ isDisabled }}>
                 <legend>
@@ -27,5 +27,51 @@
             </fieldset>
         </div>
     </form>
+{% set variable='value' %}
+<table class="table">
+<thead class="table-dark">
+    <tr>
+        <td>Invoice</td>
+        <td>Date</td>
+        <td>Note</td>
+        <td>Status</td>
+    </tr>
+</thead>
+    <tr>
+        <td><a href="https://tech.vif.com/userinvoice/pdfinvoice.php?var1=<%=Server.URLEncode(SimpleCrypt(LoginName))%>&amp;var2=<%=Server.URLEncode(SimpleCrypt(InvoiceNumber))%>"><%=InvoiceNumber%></a> --- <%=CheckInvoice%>
+
+</td>
+    </tr>
+</table>
+
+{% if invoices is defined and invoices is iterable %}
+<pre>
+select username of first invoice
+    - notice: this is bad because [0] unavailable: invoices['UserInvoice'][0]['LoginName'] 
+    - instead, use: invoices['UserInvoice']|map(attribute='LoginName')|first
+    {{invoices['UserInvoice']|map(attribute='LoginName')|first  }}
+
+    ---
+selecting only specific invoices:
+    {{ invoices['UserInvoice']|selectattr('InvoiceStatus','equalto','Paid')|list|pprint }}
+    ---
+try using map:
+    {{ invoices['UserInvoice']|map(attribute='InvoiceNumber')|list|pprint }}
+    ---
+</pre>
+<pre>
+{{ invoices.keys()|pprint }}
+</pre>
+<pre>
+{{ invoices['UserInvoice']|pprint }}
+</pre>
+<pre>
+{{ invoices['UserInvoiceDetail']|pprint }}
+</pre>
+<pre>
+{{ invoices['UpdateUsersPlans']|pprint }}
+</pre>
+{% else %}
+{% endif %}
     <!-- end form User Invoice -->
 {% endblock %}
