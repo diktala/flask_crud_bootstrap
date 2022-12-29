@@ -53,6 +53,17 @@
                 Account Status: {{ ActiveUser  }}
             </td>
         </tr>
+        <tr class="table-light fw-lighter small" >
+            <th>Plan</th>
+            <th>Next billing</th>
+        </tr>
+        {% for eachPlan in invoices['UpdateUsersPlans'] %}
+            {% set currentPlan = eachPlan['CurrentPlan'] %}
+            {% set nextBilling = eachPlan['NextBilling'].strftime('%Y-%m-%d') %}
+            <tr class="table-light fw-lighter small" >
+                <td>{{ currentPlan }}</td><td>{{ nextBilling }}</td>
+            </tr>
+        {% endfor %}
     </table>
     {% for eachInvoice in invoices['UserInvoice'] %}
     {% set Note = eachInvoice['SpecialNote']|replace('None','') %}
@@ -102,6 +113,8 @@
     {% endfor %}
 
 <pre>
+simple crypt:  {{ simpleCrypted }}
+
 select username of first invoice
     - notice: this is bad because [0] unavailable: invoices['UserInvoice'][0]['LoginName'] 
     - instead, use: invoices['UserInvoice']|map(attribute='LoginName')|first

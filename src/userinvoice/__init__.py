@@ -90,7 +90,6 @@ def _getUserInvoice(formUserDetail):
             """
         updateAladinParam1 = ( formUserDetail.data["loginName"] , )
         allRows = queryDBall(updateAladinSQL1, updateAladinParam1)
-        flash(f"UserInvoice queried successfully","success")
     except:
         flash("Error: could not get User Invoice.", "danger")
     return allRows
@@ -137,7 +136,6 @@ def _getUpdateUsersPlans(formUserDetail):
             """
         updateAladinParam1 = ( formUserDetail.data["loginName"] , )
         allRows = queryDBall(updateAladinSQL1, updateAladinParam1)
-        flash(f"UpdateUsersPlans queried successfully","success")
     except:
         flash("Error: could not get info from UpdateUsersPlans.", "danger")
     return allRows
@@ -158,6 +156,14 @@ def _processFormSubmit(formUserDetail):
         queryResult["UpdateUsersPlans"] = _getUpdateUsersPlans(formUserDetail)
         return queryResult
 
+
+""" --- """
+""" simpleCrypt encrypt/decrypt with XOR """
+def simpleCrypt(varToCrypt=''):
+    simpleCrypt = ''
+    for i in range(len(varToCrypt) -1, -1, -1):
+        simpleCrypt = simpleCrypt + chr(ord(varToCrypt[i]) ^ 22)
+    return simpleCrypt
 
 """ --- """
 """ browser clicked userinvoice/test """
@@ -186,5 +192,6 @@ def userinvoice_form():
         formUserDetail=formUserDetail,
         domain=domain,
         urlQuery=urlQuery,
-        invoices=invoices
+        invoices=invoices,
+        simpleCrypted=simpleCrypt(loginName)
     )
