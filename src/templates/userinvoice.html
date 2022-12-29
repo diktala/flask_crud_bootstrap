@@ -27,24 +27,80 @@
             </fieldset>
         </div>
     </form>
-{% set variable='value' %}
-<table class="table">
-<thead class="table-dark">
-    <tr>
-        <td>Invoice</td>
-        <td>Date</td>
-        <td>Note</td>
-        <td>Status</td>
-    </tr>
-</thead>
-    <tr>
-        <td><a href="https://tech.vif.com/userinvoice/pdfinvoice.php?var1=<%=Server.URLEncode(SimpleCrypt(LoginName))%>&amp;var2=<%=Server.URLEncode(SimpleCrypt(InvoiceNumber))%>"><%=InvoiceNumber%></a> --- <%=CheckInvoice%>
 
-</td>
-    </tr>
-</table>
+{% if invoices is defined and invoices is iterable and invoices['UserInvoice']|length > 0 %}
+{% set Balance = invoices['UserInvoice']|map(attribute='OutStandingBalance')|first %}
+{% set Balance = '%0.2f'|format( Balance ) %}
+{% set DateJoined = invoices['UserInvoice']|map(attribute='DateJoined')|first %}
+{% set DateJoined = DateJoined.strftime('%Y-%m-%d') %}
+{% set ActiveUser = invoices['UserInvoice']|map(attribute='ActiveUser')|first %}
+{% set ActiveUser = ActiveUser | replace("1","Active") | replace("None", "Inactive") %}
+{% if ActiveUser == "Active" %}
+    {% set isActive = "table-success" %}
+{% else %}
+    {% set isActive = "table-danger" %}
+{% endif %}
 
-{% if invoices is defined and invoices is iterable %}
+    <table class="table">
+        <tr class="{{ isActive }}">
+            <td>
+                Outstanding balance: {{ Balance }}
+            </td>
+            <td>
+                Member since: {{ DateJoined }}
+            </td>
+            <td>
+                Account Status: {{ ActiveUser  }}
+            </td>
+        </tr>
+    </table>
+    {% for eachInvoice in invoices['UserInvoice'] %}
+    {% set Note = eachInvoice['SpecialNote']|replace('None','') %}
+    {% set transactionDate = eachInvoice['InvoiceDate'].strftime('%Y-%m-%d') %}
+    {% if eachInvoice['InvoiceStatus'] == "Payment" %}
+        {% set transactionType = "Payment" %}
+        {% set Amount = " $" ~ '%0.2f'|format( eachInvoice['PaidAmount']|float) %}
+        {% set isInvoice = "table-success" %}
+        {% set invoiceStatus = "" %}
+        {% set invoiceNumber = "" %}
+        {% set invoiceLink = "" %}
+    {% else %}
+        {% set transactionType = "Invoice" %}
+        {% set Amount = " " %}
+        {% set isInvoice = "table-dark" %}
+        {% set invoiceStatus = eachInvoice['InvoiceStatus'] %}
+        {% set invoiceNumber = eachInvoice['InvoiceNumber'] %}
+        {% set invoiceLink = '<a href="https://tech.vif.com/userinvoice/pdfinvoice.php?var1=<%=Server.URLEncode(SimpleCrypt(LoginName))%>&amp;var2=<%=Server.URLEncode(SimpleCrypt(InvoiceNumber))%>">' ~ invoiceNumber ~ '</a> --- ' ~ invoiceNumber %}
+        {% set invoiceLink = invoiceLink | safe %}
+    {% endif %}
+        <table class="table">
+        <thead class="{{ isInvoice }}">
+            <tr>
+                <td colspan="4" >{{ transactionType }} / {{ transactionDate }} / {{ Amount }} {{invoiceStatus }} {{invoiceLink}}</td>
+            </tr>
+        </thead>
+            <tr>
+                <td colspan="4" class="table-light fw-lighter small">{{ Note }}</td>
+            </tr>
+            {% for eachInvoiceDetail in invoices['UserInvoiceDetail'][invoiceNumber] %}
+            {% set invoiceBalance = "$" ~ '%0.2f'|format( eachInvoiceDetail['InvoiceBalance']|float) %}
+            <tr>
+                <td class="table-light fw-lighter small" > - </td>
+                <td class="table-light fw-lighter small" > {{ eachInvoiceDetail['ItemCode'] }} </td>
+                <td class="table-light fw-lighter small" > {{ eachInvoiceDetail['QuantitySold'] }} </td>
+                <td class="table-light fw-lighter small" > {{ eachInvoiceDetail['LineNote'] }}</td>
+            </tr>
+            {% if loop.last %}
+            <tr>
+                <td></td>
+                <td>Total:</td>
+                <td colspan="2"> {{ invoiceBalance }} </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+    {% endfor %}
+
 <pre>
 select username of first invoice
     - notice: this is bad because [0] unavailable: invoices['UserInvoice'][0]['LoginName'] 
