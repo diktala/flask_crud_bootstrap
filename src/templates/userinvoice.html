@@ -27,7 +27,9 @@
             </fieldset>
         </div>
     </form>
+    <!-- end form User Invoice -->
 
+<!-- listing Invoices -->
 {% if invoices is defined and invoices is iterable and invoices['UserInvoice']|length > 0 %}
 {% set Balance = invoices['UserInvoice']|map(attribute='OutStandingBalance')|first %}
 {% set Balance = '%0.2f'|format( Balance ) %}
@@ -81,7 +83,15 @@
         {% set isInvoice = "table-dark" %}
         {% set invoiceStatus = eachInvoice['InvoiceStatus'] %}
         {% set invoiceNumber = eachInvoice['InvoiceNumber'] %}
-        {% set invoiceLink = '<a href="https://tech.vif.com/userinvoice/pdfinvoice.php?var1=<%=Server.URLEncode(SimpleCrypt(LoginName))%>&amp;var2=<%=Server.URLEncode(SimpleCrypt(InvoiceNumber))%>">' ~ invoiceNumber ~ '</a> --- ' ~ invoiceNumber %}
+        {% set loginName = eachInvoice['LoginName'] %}
+        {% set loginNameCrypted = simpleCrypt(loginName)|urlencode %}
+        {% set invoiceNumberCrypted = simpleCrypt(invoiceNumber|string)|urlencode %}
+        {% set invoiceNumberObfuscated = (((invoiceNumber ** 0.5)*1000000)|string)[0:3] %}
+        {% set invoiceNumberObfuscated = invoiceNumberObfuscated + "." + (invoiceNumber|string) %}
+        {% set invoiceNumberObfuscated = invoiceNumberObfuscated + (((invoiceNumber ** 0.5)*1000000)|string)[3:6] %}
+
+
+        {% set invoiceLink = '<a href="https://tech.vif.com/userinvoice/pdfinvoice.php?var1=' ~ loginNameCrypted ~ '&amp;var2=' ~ invoiceNumberCrypted ~ '">' ~ invoiceNumber ~ '</a> --- ' ~ invoiceNumberObfuscated %}
         {% set invoiceLink = invoiceLink | safe %}
     {% endif %}
         <table class="table">
@@ -112,19 +122,17 @@
         </table>
     {% endfor %}
 
+{#
 <pre>
-simple crypt:  {{ simpleCrypted }}
-
+DEBUGGING:
 select username of first invoice
-    - notice: this is bad because [0] unavailable: invoices['UserInvoice'][0]['LoginName'] 
-    - instead, use: invoices['UserInvoice']|map(attribute='LoginName')|first
     {{invoices['UserInvoice']|map(attribute='LoginName')|first  }}
 
     ---
-selecting only specific invoices:
+selecting only Paid invoices:
     {{ invoices['UserInvoice']|selectattr('InvoiceStatus','equalto','Paid')|list|pprint }}
     ---
-try using map:
+selecting only trans with InvvoiceNumber field using map:
     {{ invoices['UserInvoice']|map(attribute='InvoiceNumber')|list|pprint }}
     ---
 </pre>
@@ -140,7 +148,7 @@ try using map:
 <pre>
 {{ invoices['UpdateUsersPlans']|pprint }}
 </pre>
-{% else %}
+#}
 {% endif %}
-    <!-- end form User Invoice -->
+<!-- end listing Invoices -->
 {% endblock %}

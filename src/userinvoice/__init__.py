@@ -127,14 +127,15 @@ def _getUserInvoiceDetail(allUserInvoices):
 
 """ --- """
 """ DB getUpdateUsersPlans  """
-def _getUpdateUsersPlans(formUserDetail):
+def _getUpdateUsersPlans(loginName = ''):
     allRows = None
     try:
         updateAladinSQL1 = f"""
             EXECUTE UpdateUsersPlans
             @LoginName = %s
             """
-        updateAladinParam1 = ( formUserDetail.data["loginName"] , )
+        # updateAladinParam1 = ( formUserDetail.data["loginName"] , )
+        updateAladinParam1 = loginName
         allRows = queryDBall(updateAladinSQL1, updateAladinParam1)
     except:
         flash("Error: could not get info from UpdateUsersPlans.", "danger")
@@ -153,7 +154,12 @@ def _processFormSubmit(formUserDetail):
         queryResult["UserInvoice"] = _getUserInvoice(formUserDetail)
         allUserInvoices = queryResult["UserInvoice"]
         queryResult["UserInvoiceDetail"] = _getUserInvoiceDetail(allUserInvoices)
-        queryResult["UpdateUsersPlans"] = _getUpdateUsersPlans(formUserDetail)
+        """ --- """
+        """ get loginName from previous Invoices list """
+        actualLoginName = None
+        if len(allUserInvoices) > 1:
+            actualLoginName = allUserInvoices[0]["LoginName"]
+        queryResult["UpdateUsersPlans"] = _getUpdateUsersPlans(actualLoginName)
         return queryResult
 
 
@@ -193,5 +199,5 @@ def userinvoice_form():
         domain=domain,
         urlQuery=urlQuery,
         invoices=invoices,
-        simpleCrypted=simpleCrypt(loginName)
+        simpleCrypt=simpleCrypt
     )
