@@ -128,14 +128,13 @@ def _getUserInvoiceDetail(allUserInvoices):
 """ --- """
 """ DB getUpdateUsersPlans  """
 def _getUpdateUsersPlans(loginName = ''):
-    allRows = None
+    allRows = []
     try:
         updateAladinSQL1 = f"""
             EXECUTE UpdateUsersPlans
             @LoginName = %s
             """
-        # updateAladinParam1 = ( formUserDetail.data["loginName"] , )
-        updateAladinParam1 = loginName
+        updateAladinParam1 = loginName or " "
         allRows = queryDBall(updateAladinSQL1, updateAladinParam1)
     except:
         flash("Error: could not get info from UpdateUsersPlans.", "danger")

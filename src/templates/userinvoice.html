@@ -31,6 +31,7 @@
 
 <!-- listing Invoices -->
 {% if invoices is defined and invoices is iterable and invoices['UserInvoice']|length > 0 %}
+{% set ActualLogin = invoices['UserInvoice']|map(attribute='LoginName')|first %}
 {% set Balance = invoices['UserInvoice']|map(attribute='OutStandingBalance')|first %}
 {% set Balance = '%0.2f'|format( Balance ) %}
 {% set DateJoined = invoices['UserInvoice']|map(attribute='DateJoined')|first %}
@@ -47,6 +48,9 @@
         <tr class="{{ isActive }}">
             <td>
                 Outstanding balance: {{ Balance }}
+            </td>
+            <td>
+                Username: {{ ActualLogin }}
             </td>
             <td>
                 Member since: {{ DateJoined }}
