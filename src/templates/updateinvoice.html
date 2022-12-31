@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% from 'bootstrap5/form.html' import render_form, render_field, render_form_row %}
+{% if isUserExist %}
+    {%    set buttonStyle = "success" %}
+    {%    set isValid     = "is-valid" %}
+    {%    set isDisabled     = "" %}
+{% else %}
+    {%    set buttonStyle = "secondary" %}
+    {%    set isValid     = "is-invalid" %}
+    {%    set isDisabled     = "" %}
+{% endif %}
+{% block content %}
+    <!-- form UserInvoice -->
+    <form id="UserInfoForm" action="" novalidate="" method="POST">
+    {{ formUserDetail.csrf_token }}
+    {{ formUserDetail.BUGBUGdateJoined }}
+        <div class="row g-3">
+            <fieldset class="form-group border" {{ isDisabled }}>
+                <legend>
+                    User Invoice
+                </legend>
+                <button disabled style="display:none;">
+                <!-- this hidden button to disable submit on Enter key -->
+                </button>
+                {{ render_form_row([formUserDetail.loginName], form_type="horizontal", form_group_classes="mb-1 col-sm-12") }}
+                {{ render_form_row([formUserDetail.userInvoice], form_type="horizontal", horizontal_columns=("sm", 0, 2), button_style="secondary" ) }}
+            </fieldset>
+        </div>
+    </form>
+    <!-- end form User Invoice -->
+
+<!-- listing Invoices -->
+{% if invoices is defined and invoices is iterable and invoices['UserInvoice']|length > 0 %}
+{% set ActualLogin = invoices['UserInvoice']|map(attribute='LoginName')|first %}
+{% set Balance = invoices['UserInvoice']|map(attribute='OutStandingBalance')|first %}
+{% set Balance = '%0.2f'|format( Balance ) %}
+{% set DateJoined = invoices['UserInvoice']|map(attribute='DateJoined')|first %}
+{% set DateJoined = DateJoined.strftime('%Y-%m-%d') %}
+{% set ActiveUser = invoices['UserInvoice']|map(attribute='ActiveUser')|first %}
+{% set ActiveUser = ActiveUser | replace("1","Active") | replace("None", "Inactive") %}
+{% if ActiveUser == "Active" %}
+    {% set isActive = "table-success" %}
+{% else %}
+    {% set isActive = "table-danger" %}
+{% endif %}
+
+    <table class="table">
+        <tr class="{{ isActive }}">
+            <td>
+                Outstanding balance: {{ Balance }}
+            </td>
+            <td>
+                Username: {{ ActualLogin }}
+            </td>
+            <td>
+                Member since: {{ DateJoined }}
+            </td>
+            <td>
+                Account Status: {{ ActiveUser  }}
+            </td>
+        </tr>
+        <tr class="table-light fw-lighter small" >
+            <th>Plan</th>
+            <th>Next billing</th>
+        </tr>
+        {% for eachPlan in invoices['UpdateUsersPlans'] %}
+            {% set currentPlan = eachPlan['CurrentPlan'] %}
+            {% set nextBilling = eachPlan['NextBilling'].strftime('%Y-%m-%d') %}
+            <tr class="table-light fw-lighter small" >
+                <td>{{ currentPlan }}</td><td>{{ nextBilling }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% for eachInvoice in invoices['UserInvoice'] %}
+    {% set Note = eachInvoice['SpecialNote']|replace('None','') %}
+    {% set transactionDate = eachInvoice['InvoiceDate'].strftime('%Y-%m-%d') %}
+    {% if eachInvoice['InvoiceStatus'] == "Payment" %}
+        {% set transactionType = "Payment" %}
+        {% set Amount = " $" ~ '%0.2f'|format( eachInvoice['PaidAmount']|float) %}
+        {% set isInvoice = "table-success" %}
+        {% set invoiceStatus = "" %}
+        {% set invoiceNumber = "" %}
+        {% set invoiceLink = "" %}
+    {% else %}
+        {% set transactionType = "Invoice" %}
+        {% set Amount = " " %}
+        {% set isInvoice = "table-dark" %}
+        {% set invoiceStatus = eachInvoice['InvoiceStatus'] %}
+        {% set invoiceNumber = eachInvoice['InvoiceNumber'] %}
+        {% set loginName = eachInvoice['LoginName'] %}
+        {% set loginNameCrypted = simpleCrypt(loginName)|urlencode %}
+        {% set invoiceNumberCrypted = simpleCrypt(invoiceNumber|string)|urlencode %}
+        {% set invoiceNumberObfuscated = (((invoiceNumber ** 0.5)*1000000)|string)[0:3] %}
+        {% set invoiceNumberObfuscated = invoiceNumberObfuscated + "." + (invoiceNumber|string) %}
+        {% set invoiceNumberObfuscated = invoiceNumberObfuscated + (((invoiceNumber ** 0.5)*1000000)|string)[3:6] %}
+
+
+        {% set invoiceLink = '<a href="https://tech.vif.com/userinvoice/pdfinvoice.php?var1=' ~ loginNameCrypted ~ '&amp;var2=' ~ invoiceNumberCrypted ~ '">' ~ invoiceNumber ~ '</a> --- ' ~ invoiceNumberObfuscated %}
+        {% set invoiceLink = invoiceLink | safe %}
+    {% endif %}
+        <table class="table">
+        <thead class="{{ isInvoice }}">
+            <tr>
+                <td colspan="4" >{{ transactionType }} / {{ transactionDate }} / {{ Amount }} {{invoiceStatus }} {{invoiceLink}}</td>
+            </tr>
+        </thead>
+            <tr>
+                <td colspan="4" class="table-light fw-lighter small">{{ Note }}</td>
+            </tr>
+            {% for eachInvoiceDetail in invoices['UserInvoiceDetail'][invoiceNumber] %}
+            {% set invoiceBalance = "$" ~ '%0.2f'|format( eachInvoiceDetail['InvoiceBalance']|float) %}
+            <tr>
+                <td class="table-light fw-lighter small" > - </td>
+                <td class="table-light fw-lighter small" > {{ eachInvoiceDetail['ItemCode'] }} </td>
+                <td class="table-light fw-lighter small" > {{ eachInvoiceDetail['QuantitySold'] }} </td>
+                <td class="table-light fw-lighter small" > {{ eachInvoiceDetail['LineNote'] }}</td>
+            </tr>
+            {% if loop.last %}
+            <tr>
+                <td></td>
+                <td>Total:</td>
+                <td colspan="2"> {{ invoiceBalance }} </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+    {% endfor %}
+
+{#
+<pre>
+DEBUGGING:
+select username of first invoice
+    {{invoices['UserInvoice']|map(attribute='LoginName')|first  }}
+
+    ---
+selecting only Paid invoices:
+    {{ invoices['UserInvoice']|selectattr('InvoiceStatus','equalto','Paid')|list|pprint }}
+    ---
+selecting only trans with InvvoiceNumber field using map:
+    {{ invoices['UserInvoice']|map(attribute='InvoiceNumber')|list|pprint }}
+    ---
+</pre>
+<pre>
+{{ invoices.keys()|pprint }}
+</pre>
+<pre>
+{{ invoices['UserInvoice']|pprint }}
+</pre>
+<pre>
+{{ invoices['UserInvoiceDetail']|pprint }}
+</pre>
+<pre>
+{{ invoices['UpdateUsersPlans']|pprint }}
+</pre>
+#}
+{% endif %}
+<!-- end listing Invoices -->
+{% endblock %}

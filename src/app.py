@@ -52,10 +52,12 @@ def create_app(test_config=None):
         from src.updateuser import updateuser
         from src.createuser import createuser
         from src.userinvoice import userinvoice
+        # from src.updateinvoice import updateinvoice
 
         app.register_blueprint(updateuser, url_prefix="/updateuser")
         app.register_blueprint(createuser, url_prefix="/createuser")
         app.register_blueprint(userinvoice, url_prefix="/userinvoice")
+        # app.register_blueprint(updareinvoice, url_prefix="/updareinvoice")
         return app
 
     return app
