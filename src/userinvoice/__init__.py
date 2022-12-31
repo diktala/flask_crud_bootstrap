@@ -20,7 +20,6 @@ from flask_wtf import FlaskForm, CSRFProtect
 from wtforms.validators import InputRequired, Optional, Length, Regexp, ValidationError
 from wtforms.fields import *
 from src.model import queryDBscalar, queryDBrow, queryDBall
-from src.canadapost import getIDsFromIndex, getIndexFromPostal, getAddressFromID
 
 """ --- """
 """ define url http://.../userinvoice/ """
