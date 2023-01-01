@@ -60,7 +60,7 @@ class FormSearchInvoice(FlaskForm):
     class Meta:
         csrf = False
 
-     loginName = StringField(
+    loginName = StringField(
         label="Invoice Number",
         validators=[
             InputRequired(),
@@ -90,7 +90,17 @@ class FormUserInvoice(FlaskForm):
         description="",
         render_kw={"placeholder": ""},
     )
-    updateinvoice = SubmitField(label="Update Invoice",
+    invoiceDateStart = StringField(
+        label="Invoice Date Start",
+        validators=[
+            Optional(),
+            Length(10, 10),
+            Regexp("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", message="YYYY-MM-DD ex:2030-11-30"),
+        ],
+        description="",
+        render_kw={"placeholder": ""},
+    )
+    updateInvoice = SubmitField(label="Update Invoice",
         render_kw={"accesskey": "s", "title": "alt-S / ctrl-alt-S"},
     )
 
