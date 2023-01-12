@@ -11,11 +11,10 @@ It picks up the shell exported variables:
 'HTTP_USER'   username for http authentication
 'HTTP_PASS'   password for http authentication
 'OPERATORS'   list of operator names separated by space
+'DOMAIN'      domain name in topmenu i.e example.com
 'API_KEY1'    API1 for post address find
 'API_KEY2'    API2 for post address retrieve
 'API_REFERER' referrer URL for post address APIs
-'OPERATORS'   usernames separated by space
-'DOMAIN'      domain name in topmenu i.e example.com
 
 Example:
     python
@@ -25,10 +24,14 @@ Attributes:
     [...]
 """
 import os
+from dotenv import load_dotenv
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap5
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+# take environment variables from .env
+# note: flask loads dotenv automatically but adding it manually here
+load_dotenv('~/.env')
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
