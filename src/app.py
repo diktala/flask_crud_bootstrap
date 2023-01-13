@@ -31,7 +31,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 # take environment variables from .env
 # note: flask loads dotenv automatically but adding it manually here
-load_dotenv('')
+load_dotenv()
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
