@@ -173,7 +173,7 @@ def simpleCrypt(varToCrypt=''):
 """ browser clicked userinvoice/test """
 @userinvoice.route("/test")
 def testroute():
-    myVar = current_app.config["DB_IP"]
+    myVar = current_app.config["HTTP_USER"]
     return f"<h1>{myVar} Hurrah!!</h1>"
 
 
